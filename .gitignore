@@ -1,0 +1,28 @@
+# Local/editor
+.idea/
+.vscode/
+*.swp
+*.tmp
+
+# Logs and generated output
+*.log
+out/
+dist/
+reports/
+
+# Kubernetes local artifacts
+kubeconfig*
+*.kubeconfig
+
+# Terraform
+.terraform/
+.terraform.lock.hcl
+*.tfstate
+*.tfstate.*
+terraform.tfvars
+*.tfplan
+
+# Secrets
+*.secret.yaml
+*.secret.yml
+.env
