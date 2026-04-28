@@ -1,0 +1,22 @@
+nhncloud_user_name    = "user@example.com"
+nhncloud_tenant_id    = "00000000000000000000000000000000"
+nhncloud_api_password = "set-api-password"
+nhncloud_region       = "KR1"
+
+cluster_name        = "sidecarless-poc"
+fixed_network_id    = "replace-with-vpc-network-uuid"
+fixed_subnet_id     = "replace-with-vpc-subnet-uuid"
+worker_flavor_id    = "replace-with-worker-flavor-uuid"
+node_image_id       = "replace-with-nks-node-image-uuid"
+keypair_name        = "replace-with-keypair-name"
+kubernetes_version  = "v1.30.3"
+availability_zone   = "kr-pub-a"
+node_count          = 2
+boot_volume_size    = 50
+boot_volume_type    = "General HDD"
+
+# NHN NKS Sidecarless PoC primary mode.
+# NHN NKS Calico add-on option is expected to be selected at cluster creation time.
+calico_version  = "v3.30.2-nks2"
+calico_mode     = "ebpf"
+coredns_version = "1.8.4-nks2"
