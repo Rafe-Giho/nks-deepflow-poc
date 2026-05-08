@@ -2,15 +2,16 @@
 
 ## 1. 목표
 
-NHN Cloud NKS에서 Istio Ambient와 DeepFlow를 조합해 애플리케이션 Pod에 sidecar를 넣지 않고 L4 이상 가시성을 확보합니다.
+NHN Cloud NKS에서 DeepFlow 단독 관측 경로와 Istio Ambient + Kiali mesh 가시화 경로를 분리 검증합니다. 필요할 때 Istio Ambient + Kiali 뒤에 DeepFlow를 추가해 두 관측 결과를 비교합니다.
 
 최종 목표는 다음 순서입니다.
 
 ```text
 1. NKS 조건 검증
-2. Istio Ambient 구축
-3. DeepFlow + ClickHouse + Grafana 구축
-4. smoke web-was-db 검증
+2A. DeepFlow + ClickHouse + Grafana 단독 구축
+2B. Istio Ambient + Prometheus + Kiali 구축
+3. smoke web-was-db 검증
+4. 필요 시 Kiali 뒤 DeepFlow 추가
 5. 실제 web-was-db 배포
 6. CI/CD 구성
 7. Terraform 코드화
@@ -26,16 +27,20 @@ NHN Cloud NKS
   -> kube-system
        -> Calico-VXLAN or Calico-eBPF
        -> CoreDNS
-  -> istio-system
-       -> istiod
-       -> istio-cni
-       -> ztunnel
-       -> waypoint optional
   -> deepflow
        -> deepflow-agent DaemonSet
        -> deepflow-server
        -> ClickHouse
        -> Grafana
+
+NHN Cloud NKS
+  -> istio-system
+       -> istiod
+       -> istio-cni
+       -> ztunnel
+       -> waypoint optional
+       -> Prometheus
+       -> Kiali
   -> sidecarless-smoke
        -> smoke-was
        -> smoke-db
@@ -45,10 +50,11 @@ NHN Cloud NKS
 ## 3. 하네스 구성 원칙
 
 - 클러스터 생성과 클러스터 내부 배포를 분리합니다.
-- 초기 단계는 PowerShell 스크립트와 Kubernetes manifest/Helm values로 검증합니다.
+- 초기 단계는 `docs/team/01-build-guide.md`에서 경로를 선택하고, 분리 구축 가이드의 Linux 명령과 Kubernetes manifest/Helm values로 검증합니다.
 - Terraform 전환은 마지막 단계로 둡니다.
-- 실제 명령 실행 스크립트는 idempotent하게 만들고, 검증 스크립트는 읽기 위주로 유지합니다.
-- DeepFlow가 제공하는 ClickHouse/Grafana를 1차 경로로 사용합니다.
+- Windows PowerShell 실행 래퍼는 유지하지 않습니다.
+- DeepFlow 단독 경로에서는 DeepFlow가 제공하는 ClickHouse/Grafana를 사용합니다.
+- Istio Ambient 경로에서는 Kiali를 먼저 붙이고, DeepFlow는 선택 확장으로 붙입니다.
 - 기존 직접 ClickHouse/Grafana 구성은 비교 또는 fallback으로만 둡니다.
 
 ## 4. Phase 0. NKS Preflight
@@ -70,8 +76,10 @@ NHN Cloud NKS
 
 산출물:
 
-- `scripts/00-check-prereq.ps1`
-- `scripts/10-check-nhn-nks.ps1`
+- `docs/team/01-build-guide.md`
+- `docs/team/build-guide-deepflow-only.md`
+- `docs/team/build-guide-istio-ambient-kiali.md`
+- `docs/team/03-validation-checklist.md`
 - `infra/terraform/nhn-nks`
 
 ## 5. Phase 1. Istio Ambient

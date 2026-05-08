@@ -2,7 +2,7 @@
 
 ## 1. 우선순위 결론
 
-현재 PoC의 1순위 설계는 **NHN Cloud NKS + Istio Ambient + DeepFlow + ClickHouse + Grafana**입니다.
+현재 PoC의 1순위 설계는 두 경로를 분리 검증하는 것입니다. 하나는 **NHN Cloud NKS + DeepFlow + ClickHouse + Grafana**, 다른 하나는 **NHN Cloud NKS + Istio Ambient + Kiali**입니다. DeepFlow는 Istio Ambient + Kiali 뒤에 선택 확장으로 추가합니다.
 
 이전 Cilium/Hubble 기준은 현 목표에서 제외하고, 필요한 경우 비교 또는 참고 후보로만 둡니다.
 
@@ -18,13 +18,12 @@
 | Terraform 전환성 | 마지막 단계에서 IaC로 재현 가능한지 |
 | CI/CD 확장성 | 실제 web-was-db 배포 파이프라인으로 확장 가능한지 |
 
-## 3. 1순위. Istio Ambient + DeepFlow
+## 3. 1순위. DeepFlow 단독
 
 구성:
 
 ```text
 NHN Cloud NKS
-  -> Istio Ambient
   -> DeepFlow
   -> DeepFlow ClickHouse
   -> DeepFlow Grafana
@@ -32,40 +31,38 @@ NHN Cloud NKS
 
 장점:
 
-- 사용자가 명시한 목표와 직접 일치합니다.
-- 애플리케이션 Pod에 sidecar를 넣지 않습니다.
-- Ambient의 ztunnel로 L4 mesh를 구성할 수 있습니다.
-- waypoint를 추가하면 L7 정책/라우팅 검증이 가능합니다.
+- Istio 없이 DeepFlow 자체의 NKS 적합성을 먼저 확인합니다.
+- eBPF Agent, ClickHouse, Grafana 리스크를 mesh 리스크와 분리합니다.
 - DeepFlow가 L4 flow, L7 request log, AutoTracing을 한 경로로 제공합니다.
 - ClickHouse/Grafana를 DeepFlow stack 안에서 일관되게 운영할 수 있습니다.
 
 단점/리스크:
 
 - DeepFlow eBPF 수집 권한이 NKS 보안 정책과 맞아야 합니다.
-- Ambient mTLS/HBONE 경로에서 DeepFlow L7 가시성 범위는 실제 검증이 필요합니다.
 - DeepFlow chart가 구성하는 ClickHouse/Grafana 운영 리소스 요구량을 확인해야 합니다.
 
 채택 판단:
 
-- 현재 PoC의 primary path로 채택합니다.
+- DeepFlow 관측 도구 검증 경로로 채택합니다.
 
-## 4. 2순위. Istio Ambient + DeepFlow + 별도 Grafana
+## 4. 2순위. Istio Ambient + Kiali
 
-DeepFlow는 수집/저장에 사용하고, 기존 사내 Grafana나 별도 Grafana를 붙이는 방안입니다.
+Istio Ambient를 구성하고 Kiali로 mesh 상태와 topology를 확인하는 방안입니다.
 
 장점:
 
-- 조직 표준 Grafana가 있을 경우 통합이 쉽습니다.
-- dashboard 권한/SSO를 기존 체계와 맞추기 좋습니다.
+- sidecar 없이 ztunnel/waypoint mesh를 확인할 수 있습니다.
+- Kiali에서 ambient namespace, waypoint, service graph를 확인할 수 있습니다.
+- mesh 설정 오류와 telemetry 상태를 빠르게 볼 수 있습니다.
 
 단점:
 
-- DeepFlow 기본 dashboard와 별도 dashboard가 중복될 수 있습니다.
-- ClickHouse schema와 datasource 연결을 별도로 관리해야 합니다.
+- Prometheus가 필요합니다.
+- Istio 밖의 traffic이나 node-level eBPF flow는 직접 보지 않습니다.
 
 채택 판단:
 
-- PoC 성공 후 운영 표준화 단계에서 검토합니다.
+- Istio Ambient mesh 검증 경로로 채택합니다.
 
 ## 5. 3순위. Istio Ambient + OpenTelemetry + DeepFlow 보조
 
@@ -136,8 +133,8 @@ NKS preflight
 ## 9. 최종 산출물
 
 - NKS 조건 검증 로그
-- Istio Ambient 설치/검증 스크립트
-- DeepFlow 설치/검증 스크립트
+- Istio Ambient 설치/검증 절차
+- DeepFlow 설치/검증 절차
 - smoke web-was-db manifest
 - L4/L7 가시성 검증 결과
 - 실제 web-was-db 배포 가이드

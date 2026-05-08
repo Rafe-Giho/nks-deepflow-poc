@@ -2,21 +2,22 @@
 
 ## 1. 프로젝트 정의
 
-이 프로젝트의 현재 목표는 NHN Cloud NKS에서 **Istio Ambient + DeepFlow 기반 sidecarless observability 표준 하네스**를 검증하는 것입니다.
+이 프로젝트의 현재 목표는 NHN Cloud NKS에서 **DeepFlow 단독 관측 경로**와 **Istio Ambient + Kiali mesh 가시화 경로**를 분리 검증하는 것입니다. 필요하면 Istio Ambient + Kiali 뒤에 DeepFlow를 추가해 두 관측 결과를 비교합니다.
 
 1차 검증 구성:
 
 ```text
-NHN Cloud NKS
-  -> Istio Ambient
-       -> ztunnel L4 mesh
-       -> waypoint optional L7 policy/routing
-  -> DeepFlow
-       -> L4 flow log
-       -> L7 request log
-       -> AutoTracing
-       -> ClickHouse
-       -> Grafana
+1. NHN Cloud NKS
+   -> DeepFlow
+   -> DeepFlow ClickHouse/Grafana
+
+2. NHN Cloud NKS
+   -> Istio Ambient
+        -> ztunnel L4 mesh
+        -> waypoint optional L7 policy/routing
+   -> Prometheus
+   -> Kiali
+   -> optional DeepFlow
 ```
 
 후속 단계:
