@@ -14,16 +14,27 @@ Pod/Service/Namespace 기준 L4/L7 trace 가시성을 확보할 수 있는가?
 ```text
 NHN Cloud NKS
   -> Calico-VXLAN or Calico-eBPF
-  -> Istio Ambient
-       -> ztunnel
-       -> waypoint optional
-  -> DeepFlow
-       -> eBPF agent
-       -> server
-       -> ClickHouse
-       -> Grafana
+  -> DeepFlow-only path
+       -> eBPF agent/server/ClickHouse/Grafana
+  -> Istio Ambient + Kiali path
+       -> ztunnel/waypoint
+       -> Prometheus
+       -> Kiali
+       -> optional DeepFlow
   -> web-was-db workloads
 ```
+
+### 1.1 도구 관계를 먼저 구분해야 하는 이유
+
+이 PoC에서 헷갈리기 쉬운 지점은 "목표 아키텍처에 함께 들어간다"와 "설치 필수 의존성이다"를 구분하는 것입니다.
+
+- ClickHouse와 Grafana는 DeepFlow 없이도 구성할 수 있습니다. 다만 그 경우에는 별도 collector, ingest schema, dashboard를 직접 설계해야 합니다.
+- DeepFlow는 ClickHouse/Grafana를 포함한 관측 플랫폼으로 설치할 수 있으므로, 이 PoC에서는 DeepFlow chart가 제공하는 ClickHouse/Grafana를 primary 경로로 사용합니다.
+- DeepFlow 설치 자체에는 Istio가 필수 조건이 아닙니다. DeepFlow는 Kubernetes cluster에 단독 설치해 Pod/Service traffic을 관측할 수 있습니다.
+- Istio Ambient는 DeepFlow를 설치하기 위한 전제 조건이 아니라 sidecarless service mesh를 검증하기 위한 별도 PoC 축입니다.
+- Kiali는 DeepFlow 대체재가 아니라 Istio mesh 상태와 telemetry를 보는 콘솔입니다.
+- Kiali 뒤에 DeepFlow를 추가하면 mesh 관점과 eBPF/protocol 관점을 비교할 수 있습니다.
+- Ambient의 ztunnel/HBONE/mTLS와 waypoint 적용 여부는 DeepFlow가 L7을 얼마나 복원할 수 있는지에 영향을 줄 수 있으므로 실측 대상입니다.
 
 ## 2. NHN Cloud NKS
 
@@ -213,6 +224,36 @@ metadata:
 - Ambient namespace에는 `istio.io/dataplane-mode=ambient`를 사용합니다.
 - 두 방식을 같은 namespace에서 섞지 않는 것이 안전합니다.
 
+## 4.5 Kiali
+
+Kiali는 Istio service mesh 콘솔입니다.
+
+주요 역할:
+
+- Istio control plane과 data plane 상태 확인
+- namespace, workload, service graph 시각화
+- Istio config validation
+- traffic rate, error rate, latency 같은 metric 기반 health 확인
+- Ambient mesh에서 ztunnel, waypoint, ambient namespace 상태 확인
+
+Kiali의 전제:
+
+- Istio가 설치되어 있어야 합니다.
+- graph와 health를 보려면 Prometheus가 필요합니다.
+- DeepFlow 단독 경로에는 필요하지 않습니다.
+
+Kiali의 한계:
+
+- Kiali는 Istio telemetry를 해석하는 도구입니다.
+- Istio 밖의 traffic이나 node-level eBPF flow를 직접 수집하지 않습니다.
+- ClickHouse 기반 장기 저장이나 SQL/protocol-level 관측은 DeepFlow 같은 별도 도구가 담당합니다.
+
+이 PoC에서 Kiali 뒤에 DeepFlow를 추가하는 이유:
+
+- Kiali로 Ambient mesh 정합성을 먼저 확인합니다.
+- DeepFlow로 실제 node/pod/protocol 관측 결과를 확인합니다.
+- 두 결과가 일치하는지 비교해 sidecarless mesh와 sidecarless observability를 분리 검증합니다.
+
 ## 5. DeepFlow
 
 DeepFlow는 eBPF 기반 observability 플랫폼입니다.
@@ -223,6 +264,13 @@ DeepFlow는 eBPF 기반 observability 플랫폼입니다.
 - sidecar 없이 네트워크/요청 가시성을 확보합니다.
 - Kubernetes resource 정보를 자동 tag로 붙입니다.
 - ClickHouse에 저장하고 Grafana에서 시각화합니다.
+
+중요한 경계:
+
+- DeepFlow는 Istio 없이도 설치할 수 있습니다.
+- Istio Ambient는 DeepFlow의 필수 구성 요소가 아닙니다.
+- 이 PoC에서 둘을 함께 쓰는 이유는 `sidecarless mesh`와 `sidecarless observability`를 같은 NKS 조건에서 동시에 검증하기 위해서입니다.
+- DeepFlow가 L4 flow를 보는 것과, Ambient mTLS/HBONE 환경에서 HTTP/SQL L7 정보를 복원하는 것은 별도 성공 기준으로 봐야 합니다.
 
 ### 5.1 deepflow-agent
 
@@ -383,7 +431,7 @@ Terraform은 인프라를 코드로 관리하는 도구입니다.
 현재 PoC 원칙:
 
 - NKS 클러스터는 Terraform `plan`까지만 검증합니다.
-- Istio/DeepFlow는 먼저 스크립트와 Helm으로 검증합니다.
+- DeepFlow 단독 경로와 Istio Ambient + Kiali 경로는 먼저 `docs/team/`의 분리 구축 가이드에 있는 Helm/istioctl 명령으로 검증합니다.
 - PoC 성공 후 Helm provider/Kubernetes provider로 전환합니다.
 
 권장 전환 순서:
