@@ -111,7 +111,7 @@ variable "calico_version" {
 }
 
 variable "calico_mode" {
-  description = "NKS Calico mode. Use ebpf for the Sidecarless PoC primary path."
+  description = "NKS Calico mode. PoC default is ebpf for sidecarless network performance validation; Istio Ambient and DeepFlow must still be verified on the selected mode."
   type        = string
   default     = "ebpf"
 
@@ -124,7 +124,7 @@ variable "calico_mode" {
 variable "coredns_version" {
   description = "NKS CoreDNS add-on version."
   type        = string
-  default     = "1.8.4-nks2"
+  default     = "v1.8.3-nks1"
 }
 
 variable "extra_labels" {
