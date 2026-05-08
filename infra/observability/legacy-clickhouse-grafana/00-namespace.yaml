@@ -11,4 +11,3 @@ metadata:
   name: sidecarless-demo
   labels:
     app.kubernetes.io/part-of: sidecarless-poc
-
