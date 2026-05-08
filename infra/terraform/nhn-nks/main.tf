@@ -27,9 +27,9 @@ resource "nhncloud_kubernetes_cluster_v1" "this" {
   addons {
     name    = "calico"
     version = var.calico_version
-    options = jsonencode({
+    options = {
       mode = var.calico_mode
-    })
+    }
   }
 
   addons {
@@ -41,4 +41,3 @@ resource "nhncloud_kubernetes_cluster_v1" "this" {
     ignore_changes = [node_count]
   }
 }
-
