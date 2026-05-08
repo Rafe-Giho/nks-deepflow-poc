@@ -1,8 +1,8 @@
 # Legacy Infrastructure
 
-이 디렉터리는 현재 PoC primary path에서 제외된 과거 산출물을 보존합니다.
+이 디렉터리는 현재 PoC 구축 경로에서 제외된 과거 산출물을 보존합니다.
 
-현재 primary path:
+현재 구축 경로:
 
 ```text
 infra/mesh/istio-ambient

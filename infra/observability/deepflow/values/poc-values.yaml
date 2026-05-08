@@ -2,4 +2,4 @@ global:
   replicas: 1
 
 # Set this at install time when NKS has a non-default storage class:
-# .\scripts\30-install-deepflow.ps1 -StorageClass "<storage-class-name>"
+# helm upgrade --install deepflow deepflow/deepflow --set global.storageClass="<storage-class-name>"

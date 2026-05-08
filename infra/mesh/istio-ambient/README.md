@@ -16,19 +16,25 @@ NHN Cloud NKS에서 Istio Ambient를 설치하고 smoke workload namespace를 am
 
 ## 설치
 
-루트 디렉터리에서 실행합니다.
+팀 구축 가이드의 `Istio Ambient + Kiali` 단계를 기준으로 실행합니다.
 
-```powershell
-.\scripts\20-install-istio-ambient.ps1
-.\scripts\21-check-istio-ambient.ps1
+상세 절차: `docs/team/build-guide-istio-ambient-kiali.md`
+
+```bash
+istioctl install -f infra/mesh/istio-ambient/istio-operator.yaml --skip-confirmation
+kubectl -n istio-system rollout status deployment/istiod --timeout=300s
+kubectl -n istio-system rollout status daemonset/istio-cni-node --timeout=300s
+kubectl -n istio-system rollout status daemonset/ztunnel --timeout=300s
+istioctl analyze
 ```
 
 ## waypoint
 
 smoke namespace에서 L7 waypoint를 함께 검증하려면 다음처럼 실행합니다.
 
-```powershell
-.\scripts\40-deploy-smoke-app.ps1 -EnableWaypoint
+```bash
+istioctl waypoint apply -n sidecarless-smoke --enroll-namespace --for service
+istioctl waypoint list -n sidecarless-smoke
 ```
 
 waypoint는 `istioctl waypoint apply -n sidecarless-smoke --enroll-namespace --for service` 흐름을 사용합니다.

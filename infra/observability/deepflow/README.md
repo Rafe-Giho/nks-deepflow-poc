@@ -11,21 +11,36 @@ DeepFlow를 NHN Cloud NKS에 설치해 L4 flow, L7 request log, AutoTracing을 �
 
 ## 설치
 
-```powershell
-.\scripts\30-install-deepflow.ps1
-.\scripts\31-check-deepflow.ps1
+DeepFlow 단독 구축은 `docs/team/build-guide-deepflow-only.md`를 기준으로 합니다. Istio Ambient + Kiali 뒤에 추가하는 경우는 `docs/team/build-guide-istio-ambient-kiali.md`의 선택 단계를 따릅니다.
+
+```bash
+helm repo add deepflow https://deepflowio.github.io/deepflow --force-update
+helm repo update deepflow
+
+helm upgrade --install deepflow deepflow/deepflow \
+  --namespace deepflow \
+  --create-namespace \
+  --version "$DEEPFLOW_VERSION" \
+  -f infra/observability/deepflow/values/poc-values.yaml
 ```
 
 StorageClass를 명시해야 하면 다음처럼 실행합니다.
 
-```powershell
-.\scripts\30-install-deepflow.ps1 -StorageClass "<storage-class-name>"
+```bash
+helm upgrade --install deepflow deepflow/deepflow \
+  --namespace deepflow \
+  --create-namespace \
+  --version "$DEEPFLOW_VERSION" \
+  -f infra/observability/deepflow/values/poc-values.yaml \
+  --set global.storageClass="<storage-class-name>"
 ```
 
 ## 확인
 
-DeepFlow Grafana 접속 명령은 검증 스크립트가 출력합니다.
+DeepFlow와 Grafana 상태를 확인합니다.
 
-```powershell
-.\scripts\31-check-deepflow.ps1
+```bash
+kubectl -n deepflow get pods,svc,pvc -o wide
+kubectl -n deepflow wait --for=condition=Ready pod --all --timeout=900s
+kubectl -n deepflow port-forward svc/deepflow-grafana 3000:80
 ```

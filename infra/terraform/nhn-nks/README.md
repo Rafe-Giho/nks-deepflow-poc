@@ -1,8 +1,8 @@
 # NHN Cloud NKS Terraform Harness
 
-NHN Cloud NKS에서 Istio Ambient + DeepFlow PoC를 수행하기 위한 클러스터 생성 하네스입니다.
+NHN Cloud NKS에서 DeepFlow 단독 경로와 Istio Ambient + Kiali 경로를 검증하기 위한 클러스터 생성 하네스입니다.
 
-이 하네스는 NKS 클러스터와 기본 add-on 조건을 준비합니다. Istio Ambient와 DeepFlow 설치는 초기 검증 단계에서 Helm/istioctl 스크립트로 분리하고, PoC 성공 후 `infra/terraform/modules`로 전환합니다.
+이 하네스는 NKS 클러스터와 기본 add-on 조건을 준비합니다. DeepFlow 단독 설치와 Istio Ambient + Kiali 설치는 초기 검증 단계에서 `docs/team/`의 분리된 구축 가이드로 검증하고, PoC 성공 후 `infra/terraform/modules`로 전환합니다.
 
 ## 전제
 
@@ -30,16 +30,10 @@ NHN Cloud 콘솔/API에서 다음 값을 확인해 `terraform.tfvars`에 입력�
 
 ## 사용 순서
 
-```powershell
-Copy-Item .\terraform.tfvars.example .\terraform.tfvars
+```bash
+cp -n terraform.tfvars.example terraform.tfvars
 terraform init
 terraform plan
-```
-
-루트 디렉터리에서는 plan 전용 스크립트를 사용할 수 있습니다.
-
-```powershell
-.\scripts\15-terraform-plan-nhn-nks.ps1
 ```
 
 이 프로젝트에서는 명시적으로 승인하기 전까지 `terraform apply`를 실행하지 않습니다.
@@ -62,6 +56,6 @@ Terraform provider는 Terraform Registry 기준 최신 `nhn-cloud/nhncloud` `1.0
 
 - `node_count`는 resize 리소스와 충돌하지 않도록 `ignore_changes`로 관리합니다.
 - NKS 컨트롤 플레인은 NHN Cloud가 관리하므로 kube-apiserver/etcd 저수준 설정은 Terraform 관리 범위가 아닙니다.
-- 클러스터 내부 주 관측 스택은 `infra/observability/deepflow`와 `scripts/30-install-deepflow.ps1`을 사용합니다.
+- 클러스터 내부 주 관측 스택은 `infra/observability/deepflow`와 `docs/team/build-guide-deepflow-only.md` 또는 `docs/team/build-guide-istio-ambient-kiali.md`의 DeepFlow 설치 절차를 사용합니다.
 - 직접 ClickHouse/Grafana manifest는 `infra/observability/legacy-clickhouse-grafana`에 격리된 legacy/fallback 경로입니다.
 - 실제 plan 실행 전 `terraform.tfvars`의 placeholder 값을 모두 실제 NHN Cloud 값으로 교체해야 합니다.
