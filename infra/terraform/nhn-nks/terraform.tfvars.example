@@ -15,8 +15,8 @@ node_count          = 2
 boot_volume_size    = 50
 boot_volume_type    = "General HDD"
 
-# NHN NKS Sidecarless PoC primary mode.
-# NHN NKS Calico add-on option is expected to be selected at cluster creation time.
+# NKS Calico add-on option is selected at cluster creation time.
+# PoC default is ebpf, but validate against NHN Cloud/NKS constraints before apply.
 calico_version  = "v3.30.2-nks2"
 calico_mode     = "ebpf"
-coredns_version = "1.8.4-nks2"
+coredns_version = "v1.8.3-nks1"
