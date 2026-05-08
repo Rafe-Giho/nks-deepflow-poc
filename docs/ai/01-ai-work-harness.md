@@ -17,14 +17,11 @@
 
 ## 2. AI가 항상 지켜야 할 기준
 
-현재 primary path:
+현재 구축 가이드 경로:
 
 ```text
-NHN Cloud NKS
-  -> Istio Ambient
-  -> DeepFlow
-  -> DeepFlow ClickHouse/Grafana
-  -> sidecarless-smoke web-was-db
+1. NHN Cloud NKS -> DeepFlow -> DeepFlow ClickHouse/Grafana -> sidecarless-smoke
+2. NHN Cloud NKS -> Istio Ambient -> Prometheus -> Kiali -> sidecarless-smoke -> optional DeepFlow
 ```
 
 primary가 아닌 것:
@@ -43,8 +40,8 @@ primary가 아닌 것:
 AI는 작업 전 다음 순서로 확인합니다.
 
 1. 사용자 요청이 분석인지 변경인지 구분
-2. `docs/project-source-of-truth.md` 확인
-3. `docs/deprecated-paths.md` 확인
+2. `docs/ai/00-project-source-of-truth.md` 확인
+3. `docs/ai/04-deprecated-paths.md` 확인
 4. 관련 코드/문서 검색
 5. 변경이 필요한 primary 경로 결정
 6. 검증 명령 결정
@@ -53,7 +50,7 @@ AI는 작업 전 다음 순서로 확인합니다.
 
 ```powershell
 rg --files
-rg -n "Istio|Ambient|DeepFlow|legacy|deprecated|sidecarless-smoke|terraform apply" README.md docs infra scripts
+rg -n "Istio|Ambient|DeepFlow|legacy|deprecated|sidecarless-smoke|terraform apply" README.md docs infra
 ```
 
 ## 4. 작업 유형별 원칙
@@ -67,10 +64,12 @@ rg -n "Istio|Ambient|DeepFlow|legacy|deprecated|sidecarless-smoke|terraform appl
 
 ### 문서 수정
 
-- `docs/project-source-of-truth.md`와 충돌하지 않게 수정
-- 실행 명령은 Linux 기준이면 `docs/poc-linux-runbook.md`에 반영
-- 이론 설명은 `docs/poc-tools-theory.md`에 반영
-- AI 작업 기준은 `docs/ai-work-harness.md` 또는 `AGENTS.md`에 반영
+- `docs/ai/00-project-source-of-truth.md`와 충돌하지 않게 수정
+- 구축 경로 선택 기준은 `docs/team/01-build-guide.md`에 반영
+- DeepFlow 단독 명령은 `docs/team/build-guide-deepflow-only.md`에 반영
+- Istio Ambient + Kiali 명령은 `docs/team/build-guide-istio-ambient-kiali.md`에 반영
+- 이론 설명은 `docs/team/02-tool-concepts.md`에 반영
+- AI 작업 기준은 `docs/ai/01-ai-work-harness.md` 또는 `AGENTS.md`에 반영
 
 ### Kubernetes 하네스 수정
 
@@ -78,7 +77,9 @@ rg -n "Istio|Ambient|DeepFlow|legacy|deprecated|sidecarless-smoke|terraform appl
 - smoke app은 `infra/apps/smoke`
 - Istio Ambient는 `infra/mesh/istio-ambient`
 - DeepFlow는 `infra/observability/deepflow`
-- legacy 경로를 기본 실행 흐름에 다시 넣지 않음
+- Kiali는 팀 가이드 문서 기준으로 설치하고, 별도 manifest를 만들 때만 `infra/`에 추가
+- Windows PowerShell 실행 래퍼를 새로 만들지 않음
+- legacy 경로를 기본 구축 흐름에 다시 넣지 않음
 
 ### Terraform 수정
 
@@ -91,7 +92,7 @@ rg -n "Istio|Ambient|DeepFlow|legacy|deprecated|sidecarless-smoke|terraform appl
 ## 5. 변경 전 체크리스트
 
 - [ ] 사용자의 최신 요청과 맞는가?
-- [ ] primary path 기준인가?
+- [ ] source-of-truth의 구축 경로 기준인가?
 - [ ] legacy 파일을 건드리는 이유가 명확한가?
 - [ ] 실제 클러스터 변경 명령이 포함되는가?
 - [ ] `apply`, `install`, `upgrade`가 필요한 경우 사용자가 요청했는가?
@@ -102,7 +103,6 @@ rg -n "Istio|Ambient|DeepFlow|legacy|deprecated|sidecarless-smoke|terraform appl
 - [ ] README 링크가 맞는가?
 - [ ] source-of-truth와 충돌하지 않는가?
 - [ ] deprecated path에 새 의존성이 생기지 않았는가?
-- [ ] 스크립트 parse가 통과하는가?
 - [ ] Kustomize 렌더링이 통과하는가?
 - [ ] Terraform fmt/validate가 통과하는가?
 - [ ] 실행하지 못한 검증을 명확히 보고했는가?

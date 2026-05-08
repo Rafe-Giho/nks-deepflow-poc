@@ -37,7 +37,7 @@
 
 결정:
 
-- Cilium/Hubble은 현재 PoC primary path가 아닙니다.
+- Cilium/Hubble은 현재 PoC 구축 경로가 아닙니다.
 - 필요 시 별도 비교 실험으로 분리합니다.
 
 이유:
@@ -47,14 +47,14 @@
 
 영향:
 
-- 새 문서/스크립트에서 Cilium/Hubble을 기본 실행 경로로 참조하지 않습니다.
+- 새 문서에서 Cilium/Hubble을 기본 실행 경로로 참조하지 않습니다.
 
 ## 2026-05-08: Legacy 경로 격리
 
 결정:
 
 - 이전 direct ClickHouse/Grafana와 echo workload를 legacy 경로로 이동합니다.
-- legacy 스크립트는 `-ConfirmLegacy` 없이는 실패하게 합니다.
+- legacy manifest는 보존하되 기본 구축 경로에서 제외합니다.
 
 이유:
 
@@ -62,7 +62,43 @@
 
 영향:
 
-- primary 실행 흐름은 `scripts/20-install-istio-ambient.ps1`, `scripts/30-install-deepflow.ps1`, `scripts/40-deploy-smoke-app.ps1`, `scripts/50-verify-poc-visibility.ps1`만 사용합니다.
+- 구축 흐름은 `docs/team/01-build-guide.md`와 `infra/` 하위 manifest/values를 기준으로 합니다.
+
+## 2026-05-08: PowerShell 실행 래퍼 제거
+
+결정:
+
+- PowerShell 실행 래퍼 파일을 저장소에서 제거합니다.
+- 팀 구축 절차는 Linux 기준 `docs/team/01-build-guide.md`와 하위 분리 가이드에 둡니다.
+
+이유:
+
+- Windows PowerShell 래퍼가 팀 구축 가이드와 중복됩니다.
+- primary/legacy 실행 경로 혼동을 만들 수 있습니다.
+
+영향:
+
+- 실행 절차 변경은 `docs/team/01-build-guide.md`와 하위 분리 가이드에 반영합니다.
+- AI 작업 기준은 실행 스크립트가 아니라 source-of-truth와 validation gate 문서로 관리합니다.
+
+## 2026-05-08: 구축 가이드 분리와 Kiali 경로 추가
+
+결정:
+
+- DeepFlow 단독 구축 가이드와 Istio Ambient + Kiali 구축 가이드를 분리합니다.
+- Istio Ambient + Kiali 뒤 DeepFlow 추가는 선택 확장으로 둡니다.
+
+이유:
+
+- DeepFlow 설치에는 Istio가 필수가 아닙니다.
+- Kiali는 Istio mesh 상태를 보는 콘솔이고 DeepFlow와 역할이 다릅니다.
+- 두 도구를 함께 쓰면 Kiali의 mesh 관점과 DeepFlow의 eBPF/protocol 관점을 비교할 수 있습니다.
+
+영향:
+
+- 팀은 `docs/team/01-build-guide.md`에서 경로를 선택합니다.
+- DeepFlow-only 명령은 `docs/team/build-guide-deepflow-only.md`에 둡니다.
+- Istio Ambient + Kiali 및 선택 DeepFlow 명령은 `docs/team/build-guide-istio-ambient-kiali.md`에 둡니다.
 
 ## 2026-05-08: Terraform은 plan-only
 
@@ -77,4 +113,4 @@
 
 영향:
 
-- 문서와 스크립트에서 apply는 기본 흐름에 포함하지 않습니다.
+- 문서의 기본 흐름에 apply는 포함하지 않습니다.

@@ -7,25 +7,28 @@
 읽을 파일:
 
 ```powershell
-Get-Content -Raw .\docs\project-source-of-truth.md
-Get-Content -Raw .\docs\deprecated-paths.md
+Get-Content -Raw .\docs\ai\00-project-source-of-truth.md
+Get-Content -Raw .\docs\ai\04-deprecated-paths.md
 rg --files
 git status --short
 ```
 
 확인할 것:
 
-- primary path와 legacy path 혼동 여부
+- 현재 구축 경로와 legacy path 혼동 여부
 - README 링크 정합성
 - 새 변경이 source-of-truth와 충돌하는지
 
 ## 2. "NKS 사전 점검해"
 
-실행:
+확인 명령:
 
 ```powershell
-.\scripts\00-check-prereq.ps1
-.\scripts\10-check-nhn-nks.ps1
+kubectl config current-context
+kubectl get nodes -o wide
+kubectl get storageclass
+kubectl -n kube-system get pods -o wide
+kubectl auth can-i create daemonsets.apps -n deepflow
 ```
 
 보고:
@@ -42,9 +45,7 @@ git status --short
 수정 대상:
 
 - `infra/mesh/istio-ambient`
-- `scripts/20-install-istio-ambient.ps1`
-- `scripts/21-check-istio-ambient.ps1`
-- `docs/poc-linux-runbook.md`
+- `docs/team/build-guide-istio-ambient-kiali.md`
 
 검증:
 
@@ -60,9 +61,8 @@ kubectl get crd gateways.gateway.networking.k8s.io
 수정 대상:
 
 - `infra/observability/deepflow`
-- `scripts/30-install-deepflow.ps1`
-- `scripts/31-check-deepflow.ps1`
-- `docs/poc-linux-runbook.md`
+- `docs/team/build-guide-deepflow-only.md`
+- `docs/team/build-guide-istio-ambient-kiali.md`
 
 검증:
 
@@ -78,8 +78,9 @@ helm search repo deepflow/deepflow --versions
 수정 대상:
 
 - `infra/apps/smoke`
-- `scripts/40-deploy-smoke-app.ps1`
-- `scripts/50-verify-poc-visibility.ps1`
+- `docs/team/build-guide-deepflow-only.md`
+- `docs/team/build-guide-istio-ambient-kiali.md`
+- `docs/team/03-validation-checklist.md`
 
 금지:
 
@@ -96,11 +97,14 @@ kubectl kustomize .\infra\apps\smoke
 
 수정 우선순위:
 
-1. `docs/project-source-of-truth.md`
-2. `docs/poc-linux-runbook.md`
-3. `docs/poc-tools-theory.md`
-4. `docs/validation-checklist.md`
-5. `README.md`
+1. `docs/ai/00-project-source-of-truth.md`
+2. `docs/team/01-build-guide.md`
+3. `docs/team/build-guide-deepflow-only.md`
+4. `docs/team/build-guide-istio-ambient-kiali.md`
+5. `docs/team/02-tool-concepts.md`
+6. `docs/team/03-validation-checklist.md`
+7. `docs/README.md`
+8. `README.md`
 
 확인:
 
@@ -134,9 +138,10 @@ C:\terraform\terraform.exe validate
 
 관점:
 
-- primary path와 legacy path 혼동
+- 현재 구축 경로와 legacy path 혼동
 - 실제 apply/install이 문서 기본 흐름에 들어갔는지
 - 검증 기준이 DeepFlow/Ambient 기준인지
+- Kiali가 필요한 경로와 DeepFlow-only 경로가 섞이지 않았는지
 - Terraform apply 금지 위반 여부
 - 오래된 namespace/table/script 참조
 

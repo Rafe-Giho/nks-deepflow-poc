@@ -1,25 +1,24 @@
 # Deprecated Paths
 
-이 문서는 현재 PoC primary path에서 제외된 파일과 디렉터리를 명확히 구분합니다.
+이 문서는 현재 PoC 구축 경로에서 제외된 파일과 디렉터리를 명확히 구분합니다.
 
 ## 1. 원칙
 
 아래 경로는 보존용입니다.
 
 - 기본 실행 흐름에 포함하지 않습니다.
-- 새 문서에서 primary path로 소개하지 않습니다.
+- 새 문서에서 현재 구축 경로로 소개하지 않습니다.
 - AI가 작업 기준으로 삼지 않습니다.
 - 사용자가 명시적으로 legacy 검증을 요청한 경우에만 사용합니다.
 
-## 2. Deprecated Scripts
+## 2. Deleted Script Paths
 
-| 경로 | 대체 경로 | 사유 |
+Windows PowerShell 실행 래퍼는 혼동을 줄이기 위해 저장소에서 제거했습니다. 아래 경로는 다시 만들지 않습니다.
+
+| 삭제된 범위 | 대체 기준 | 사유 |
 | --- | --- | --- |
-| `scripts/legacy/20-apply-legacy-observability.ps1` | `scripts/30-install-deepflow.ps1` | 직접 ClickHouse/Grafana 배포는 primary가 아님 |
-| `scripts/legacy/30-deploy-legacy-echo-workload.ps1` | `scripts/40-deploy-smoke-app.ps1` | echo workload는 smoke web-was-db를 대체하지 못함 |
-| `scripts/legacy/40-legacy-smoke-test.ps1` | `scripts/50-verify-poc-visibility.ps1` | `sidecarless.network_events` 기준 검증은 DeepFlow 기준이 아님 |
-
-legacy 스크립트는 실수 방지를 위해 `-ConfirmLegacy` 없이는 실행되지 않습니다.
+| PowerShell 실행 래퍼 | `docs/team/01-build-guide.md` | Linux 구축 가이드와 중복되어 실행 기준을 흐림 |
+| legacy PowerShell 실행 래퍼 | `docs/ai/04-deprecated-paths.md` | legacy 실행 경로가 primary PoC와 혼동됨 |
 
 ## 3. Deprecated Manifests
 
@@ -52,15 +51,12 @@ legacy 경로는 다음 경우에만 사용합니다.
 - 문서 마이그레이션 검토
 - 사용자가 명시적으로 legacy 실행을 요청한 경우
 
-실행 예:
-
-```powershell
-.\scripts\legacy\20-apply-legacy-observability.ps1 -ConfirmLegacy
-```
+실행이 필요하면 `docs/team/01-build-guide.md`에서 경로를 선택한 뒤 해당 분리 가이드의 Linux 명령을 기준으로 수동 비교 실험을 작성합니다.
 
 ## 7. 금지되는 사용 사례
 
 - 새 PoC 실행 순서에 legacy script 추가
+- Windows PowerShell 실행 래퍼 재생성
 - DeepFlow 성공 기준 대신 `sidecarless.network_events` count 사용
 - `infra/legacy/workloads`를 smoke app으로 소개
 - `sidecarless-demo`를 primary namespace로 사용
