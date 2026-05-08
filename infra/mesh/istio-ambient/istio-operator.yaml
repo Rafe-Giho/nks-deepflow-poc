@@ -1,0 +1,7 @@
+apiVersion: install.istio.io/v1alpha1
+kind: IstioOperator
+metadata:
+  name: ambient
+  namespace: istio-system
+spec:
+  profile: ambient
