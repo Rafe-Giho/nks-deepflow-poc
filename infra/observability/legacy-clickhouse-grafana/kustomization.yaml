@@ -1,4 +1,0 @@
-resources:
-  - 00-namespace.yaml
-  - 10-clickhouse.yaml
-  - 20-grafana.yaml
