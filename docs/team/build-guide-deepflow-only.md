@@ -1,6 +1,6 @@
 # DeepFlow 단독 구축 가이드
 
-이 문서는 NHN Cloud NKS에서 Istio 없이 DeepFlow만 설치해 Pod/Service L4/L7 traffic 가시성을 확인하는 구축 절차입니다. 명령어는 Ubuntu 계열 Linux 기준이며, 저장소 루트에서 실행한다고 가정합니다.
+이 문서는 NHN Cloud NKS에서 DeepFlow를 설치해 Pod/Service L4/L7 traffic 가시성을 확인하는 구축 절차입니다. 명령어는 Ubuntu 계열 Linux 기준이며, 저장소 루트에서 실행한다고 가정합니다.
 
 이 문서는 실제 NKS 클러스터에서 검증한 DeepFlow 구축/가시성 확인 과정을 기준으로 작성했습니다. 단, 작업 도구 설치, Gateway API/NGINX Gateway Fabric/cert-manager 신규 설치, DNS 등록은 새 환경에서 필요한 준비 절차이므로 환경에 맞게 수행합니다.
 
@@ -60,7 +60,7 @@ NHN Cloud NKS
 - DeepFlow Server/App/MySQL/ClickHouse/Grafana가 Ready입니다.
 - DeepFlow PVC가 `sgh-cinder-sc` StorageClass로 Bound입니다.
 - web-was-db traffic이 DeepFlow ClickHouse와 Grafana에서 Pod/Service/Namespace 기준으로 보입니다.
-- Istio, ztunnel, waypoint, Kiali는 이 경로의 필수 구성요소가 아닙니다.
+- service mesh 구성요소는 이 경로의 필수 구성요소가 아닙니다.
 
 ## 2. 전제
 
@@ -621,7 +621,7 @@ NKS Terraform 구성은 이 DeepFlow-only 검증 절차의 선행 조건이 아�
 DeepFlow-only 검증 성공
   -> web-was-db 검증
   -> CI/CD 정리
-  -> NKS/Istio/DeepFlow Terraform 코드화
+  -> NKS/DeepFlow Terraform 코드화
 ```
 
 관련 문서:

@@ -1,142 +1,74 @@
-# PoC #1 설계안 및 방향성
+# 설계안과 방향성
 
-## 1. 우선순위 결론
+현재 PoC의 설계 우선순위는 DeepFlow 기반 관측 경로를 안정적으로 구축하고, 이후 실제 앱/CI/CD/Terraform으로 확장하는 것입니다.
 
-현재 PoC의 1순위 설계는 두 경로를 분리 검증하는 것입니다. 하나는 **NHN Cloud NKS + DeepFlow + ClickHouse + Grafana**, 다른 하나는 **NHN Cloud NKS + Istio Ambient + Kiali**입니다. DeepFlow는 Istio Ambient + Kiali 뒤에 선택 확장으로 추가합니다.
+## 1. 1순위. DeepFlow chart 기본 구성
 
-이전 Cilium/Hubble 기준은 현 목표에서 제외하고, 필요한 경우 비교 또는 참고 후보로만 둡니다.
-
-## 2. 설계안 평가 기준
-
-| 기준 | 설명 |
-| --- | --- |
-| NKS 적합성 | NHN Cloud NKS에서 실제 설치/운영 가능한지 |
-| Sidecarless 정합성 | 애플리케이션 Pod에 Envoy sidecar가 없는지 |
-| L4 가시성 | Pod/Service/Namespace 기준 flow를 볼 수 있는지 |
-| L7 가시성 | HTTP, SQL 등 request 단위 로그/trace를 볼 수 있는지 |
-| 운영 단순성 | 설치, 업그레이드, 장애 대응이 가능한지 |
-| Terraform 전환성 | 마지막 단계에서 IaC로 재현 가능한지 |
-| CI/CD 확장성 | 실제 web-was-db 배포 파이프라인으로 확장 가능한지 |
-
-## 3. 1순위. DeepFlow 단독
-
-구성:
-
-```text
-NHN Cloud NKS
-  -> DeepFlow
-  -> DeepFlow ClickHouse
-  -> DeepFlow Grafana
-```
+DeepFlow Helm chart가 제공하는 Agent, Server, ClickHouse, Grafana를 그대로 사용합니다.
 
 장점:
 
-- Istio 없이 DeepFlow 자체의 NKS 적합성을 먼저 확인합니다.
-- eBPF Agent, ClickHouse, Grafana 리스크를 mesh 리스크와 분리합니다.
-- DeepFlow가 L4 flow, L7 request log, AutoTracing을 한 경로로 제공합니다.
-- ClickHouse/Grafana를 DeepFlow stack 안에서 일관되게 운영할 수 있습니다.
+- 구축 속도가 빠릅니다.
+- 공식 chart 기준이라 재현성이 높습니다.
+- ClickHouse/Grafana 연결을 직접 설계하지 않아도 됩니다.
 
-단점/리스크:
+주의:
 
-- DeepFlow eBPF 수집 권한이 NKS 보안 정책과 맞아야 합니다.
-- DeepFlow chart가 구성하는 ClickHouse/Grafana 운영 리소스 요구량을 확인해야 합니다.
+- PVC와 StorageClass가 안정적이어야 합니다.
+- chart values 변경은 최소화하고 검증된 값만 반영합니다.
 
-채택 판단:
+## 2. 2순위. NKS Cinder StorageClass 표준화
 
-- DeepFlow 관측 도구 검증 경로로 채택합니다.
-
-## 4. 2순위. Istio Ambient + Kiali
-
-Istio Ambient를 구성하고 Kiali로 mesh 상태와 topology를 확인하는 방안입니다.
+NKS `csi-cinder` add-on을 전제로 `sgh-cinder-sc`를 사용합니다.
 
 장점:
 
-- sidecar 없이 ztunnel/waypoint mesh를 확인할 수 있습니다.
-- Kiali에서 ambient namespace, waypoint, service graph를 확인할 수 있습니다.
-- mesh 설정 오류와 telemetry 상태를 빠르게 볼 수 있습니다.
+- DeepFlow ClickHouse/MySQL persistence 기준이 명확합니다.
+- 팀 구축 가이드와 실제 매니페스트가 일치합니다.
 
-단점:
+주의:
 
-- Prometheus가 필요합니다.
-- Istio 밖의 traffic이나 node-level eBPF flow는 직접 보지 않습니다.
+- 이미 생성된 StorageClass의 일부 필드는 변경이 제한됩니다.
+- quota와 volume type은 NHN Cloud 환경별로 확인해야 합니다.
 
-채택 판단:
+## 3. 3순위. web-was-db 관측 검증
 
-- Istio Ambient mesh 검증 경로로 채택합니다.
-
-## 5. 3순위. Istio Ambient + OpenTelemetry + DeepFlow 보조
-
-애플리케이션 trace는 OpenTelemetry로 보완하고, DeepFlow는 네트워크/인프라 trace를 맡기는 방안입니다.
+실제 앱의 web -> was -> db 흐름을 기준으로 DeepFlow dashboard와 ClickHouse query를 검증합니다.
 
 장점:
 
-- cross-thread/asynchronous trace 한계를 보완할 수 있습니다.
-- 실제 web-was-db가 이미 OTel을 지원하면 trace 품질이 좋아집니다.
+- PoC 결과가 실제 서비스 구조와 직접 연결됩니다.
+- HTTP/DB traffic을 함께 확인할 수 있습니다.
 
-단점:
+주의:
 
-- sidecarless는 유지되지만 코드/SDK 또는 agent 설정 부담이 늘어납니다.
-- 현재 1차 목표보다 범위가 커집니다.
+- 앱 자체 오류와 관측 오류를 분리해야 합니다.
+- 트래픽이 충분히 발생해야 Grafana map/metric이 의미 있게 보입니다.
 
-채택 판단:
+## 4. 4순위. 커스텀 dashboard
 
-- DeepFlow만으로 L7/trace가 부족할 때 2차 보완책으로 둡니다.
-
-## 6. 4순위. Istio Sidecar baseline + DeepFlow 비교
-
-Ambient와 기존 sidecar 방식의 차이를 비교하기 위한 baseline입니다.
+DeepFlow 기본 dashboard를 기반으로 web-was-db 전용 dashboard를 추가합니다.
 
 장점:
 
-- CPU/memory/container 수/latency 비교 근거를 만들 수 있습니다.
-- 보고서 설득력이 좋아집니다.
+- 팀이 확인해야 할 정보만 빠르게 볼 수 있습니다.
+- namespace/service/pod 단위 비교가 쉬워집니다.
 
-단점:
+주의:
 
-- 현재 목표는 sidecarless이므로 주 경로가 아닙니다.
-- 별도 namespace와 injection 정책이 필요합니다.
+- DeepFlow datasource query schema에 맞춰야 합니다.
+- Grafana map layout은 기본 panel의 제약을 받습니다.
 
-채택 판단:
+## 5. 5순위. Terraform 전환
 
-- 성능/운영 비교가 필요할 때만 추가합니다.
-
-## 7. 5순위. Cilium/Hubble 재검토
-
-이전 검토 축이었던 Cilium/Hubble을 별도 비교 대상으로 두는 방안입니다.
+검증된 절차를 NKS/Helm/Kubernetes provider로 전환합니다.
 
 장점:
 
-- eBPF flow observability 기준선으로 활용할 수 있습니다.
+- 재현성과 변경 추적성이 좋아집니다.
+- 운영 표준화에 적합합니다.
 
-단점:
+주의:
 
-- 현재 목표와 직접 맞지 않습니다.
-- NKS 기본 CNI/관리형 add-on과 충돌 가능성이 있습니다.
-
-채택 판단:
-
-- 현재 PoC에서는 제외합니다. 필요하면 별도 실험으로 분리합니다.
-
-## 8. 권장 진행 순서
-
-```text
-NKS preflight
-  -> Istio Ambient
-  -> DeepFlow
-  -> smoke web-was-db
-  -> DeepFlow visibility check
-  -> real web-was-db
-  -> CI/CD
-  -> Terraform
-```
-
-## 9. 최종 산출물
-
-- NKS 조건 검증 로그
-- Istio Ambient 설치/검증 절차
-- DeepFlow 설치/검증 절차
-- smoke web-was-db manifest
-- L4/L7 가시성 검증 결과
-- 실제 web-was-db 배포 가이드
-- CI/CD 설계
-- Terraform 전환 설계
+- 현재 단계에서는 `plan`까지만 수행합니다.
+- 민감정보, kubeconfig, tfstate는 커밋하지 않습니다.

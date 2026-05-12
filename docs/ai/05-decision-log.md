@@ -9,29 +9,13 @@
 
 이유:
 
-- 사용자 목표가 `Istio Ambient + DeepFlow + ClickHouse/Grafana`로 명확해졌습니다.
 - Pod L4/L7 trace 가시성 검증이 핵심입니다.
+- 별도 이벤트 수집기를 만들지 않고 DeepFlow chart가 제공하는 저장소/대시보드를 사용합니다.
 
 영향:
 
 - 직접 ClickHouse/Grafana manifest는 현재 구축 경로에서 제외합니다.
 - `sidecarless.network_events` 테이블은 현재 primary 성공 기준이 아닙니다.
-
-## 2026-05-08: Mesh 경로를 Istio Ambient로 확정
-
-결정:
-
-- 현재 mesh primary는 Istio Ambient입니다.
-- ztunnel 기반 L4 검증 후 필요 시 waypoint로 L7 기능을 검증합니다.
-
-이유:
-
-- 사용자가 NHN Cloud NKS에서 Istio Ambient 구축을 명시했습니다.
-- 애플리케이션 Pod에 sidecar를 넣지 않는 것이 핵심입니다.
-
-영향:
-
-- 기존 Istio sidecar는 baseline 비교 항목으로만 둡니다.
 
 ## 2026-05-08: Cilium/Hubble을 primary에서 제외
 
@@ -68,7 +52,7 @@
 결정:
 
 - PowerShell 실행 래퍼 파일을 저장소에서 제거합니다.
-- 팀 구축 절차는 Linux 기준 `docs/team/01-build-guide.md`와 하위 분리 가이드에 둡니다.
+- 팀 구축 절차는 Linux 기준 `docs/team/01-build-guide.md`와 하위 가이드에 둡니다.
 
 이유:
 
@@ -77,27 +61,8 @@
 
 영향:
 
-- 실행 절차 변경은 `docs/team/01-build-guide.md`와 하위 분리 가이드에 반영합니다.
+- 실행 절차 변경은 `docs/team/01-build-guide.md`와 하위 가이드에 반영합니다.
 - AI 작업 기준은 실행 스크립트가 아니라 source-of-truth와 validation gate 문서로 관리합니다.
-
-## 2026-05-08: 구축 가이드 분리와 Kiali 경로 추가
-
-결정:
-
-- DeepFlow 단독 구축 가이드와 Istio Ambient + Kiali 구축 가이드를 분리합니다.
-- Istio Ambient + Kiali 뒤 DeepFlow 추가는 선택 확장으로 둡니다.
-
-이유:
-
-- DeepFlow 설치에는 Istio가 필수가 아닙니다.
-- Kiali는 Istio mesh 상태를 보는 콘솔이고 DeepFlow와 역할이 다릅니다.
-- 두 도구를 함께 쓰면 Kiali의 mesh 관점과 DeepFlow의 eBPF/protocol 관점을 비교할 수 있습니다.
-
-영향:
-
-- 팀은 `docs/team/01-build-guide.md`에서 경로를 선택합니다.
-- DeepFlow-only 명령은 `docs/team/build-guide-deepflow-only.md`에 둡니다.
-- Istio Ambient + Kiali 및 선택 DeepFlow 명령은 `docs/team/build-guide-istio-ambient-kiali.md`에 둡니다.
 
 ## 2026-05-11: Legacy manifest 삭제
 
@@ -109,13 +74,47 @@
 이유:
 
 - DeepFlow chart가 ClickHouse/Grafana를 구성하므로 별도 manifest가 필요하지 않습니다.
-- smoke web-was-db가 현재 workload 검증 기준입니다.
+- web-was-db가 현재 workload 검증 기준입니다.
 - 보존용 legacy 디렉터리가 남아 있으면 실행자가 잘못 사용할 수 있습니다.
 
 영향:
 
 - 삭제된 과거 경로는 `docs/ai/04-deprecated-paths.md`에서 재생성 금지 항목으로만 관리합니다.
-- 현재 구축 경로는 `infra/observability/deepflow`, `infra/apps/smoke`, `infra/mesh/istio-ambient`입니다.
+- 현재 구축 경로는 `infra/observability/deepflow`, `k8s-3tier-app`입니다.
+
+## 2026-05-12: DeepFlow 단독 경로로 단순화
+
+결정:
+
+- 프로젝트의 현재 실행 경로를 DeepFlow 단독 검증으로 단순화합니다.
+- mesh 전용 문서, manifest, Terraform placeholder는 제거합니다.
+- 임시 검증 namespace에서도 mesh 편입 라벨을 제거합니다.
+
+이유:
+
+- 사용자가 해당 모드 검증을 진행하지 않겠다고 명시했습니다.
+- 현재 목표는 DeepFlow로 web-was-db의 L4/L7 가시성을 확보하는 것입니다.
+
+영향:
+
+- 팀 가이드는 DeepFlow 구축 가이드 하나만 유지합니다.
+- validation gate와 AI 작업 기준도 DeepFlow 중심으로 정리합니다.
+
+## 2026-05-12: 임시 검증 앱 제거
+
+결정:
+
+- 임시 검증 앱 경로를 삭제합니다.
+- 검증 앱은 `k8s-3tier-app`으로 통일합니다.
+
+이유:
+
+- 실제 검증에 이미 web-was-db 앱을 사용하고 있습니다.
+- 별도 임시 검증 앱이 남아 있으면 실행자가 어느 앱을 기준으로 검증해야 하는지 혼동할 수 있습니다.
+
+영향:
+
+- 문서의 검증 기준과 validation gate는 `sgh-web-ns`, `sgh-was-ns`, `sgh-db-ns` 기준으로 정리합니다.
 
 ## 2026-05-08: Terraform은 plan-only
 

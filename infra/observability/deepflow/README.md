@@ -11,7 +11,7 @@ DeepFlow를 NHN Cloud NKS에 설치해 L4 flow, L7 request log, AutoTracing을 �
 
 ## 설치
 
-DeepFlow 단독 구축은 `docs/team/build-guide-deepflow-only.md`를 기준으로 합니다. Istio Ambient + Kiali 뒤에 추가하는 경우는 `docs/team/build-guide-istio-ambient-kiali.md`의 선택 단계를 따릅니다.
+DeepFlow 구축은 `docs/team/build-guide-deepflow-only.md`를 기준으로 합니다.
 
 ```bash
 helm repo add deepflow https://deepflowio.github.io/deepflow --force-update

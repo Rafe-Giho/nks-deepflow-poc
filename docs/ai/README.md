@@ -15,8 +15,8 @@
 
 ## 원칙
 
-- 현재 구축 경로는 DeepFlow 단독과 Istio Ambient + Kiali로 분리합니다.
+- 현재 구축 경로는 DeepFlow 단독입니다.
 - 삭제된 과거 경로를 기본 실행 흐름으로 되돌리지 않습니다.
-- 구축 경로 선택 기준은 `docs/team/01-build-guide.md`에 반영합니다.
-- 실제 실행 명령은 `docs/team/build-guide-deepflow-only.md` 또는 `docs/team/build-guide-istio-ambient-kiali.md`에 반영합니다.
+- 구축 기준은 `docs/team/01-build-guide.md`에 반영합니다.
+- 실제 실행 명령은 `docs/team/build-guide-deepflow-only.md`에 반영합니다.
 - 도구/개념 설명은 `docs/team/02-tool-concepts.md`에 반영합니다.

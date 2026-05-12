@@ -111,7 +111,7 @@ variable "calico_version" {
 }
 
 variable "calico_mode" {
-  description = "NKS Calico mode. PoC default is ebpf for sidecarless network performance validation; Istio Ambient and DeepFlow must still be verified on the selected mode."
+  description = "NKS Calico mode. PoC default is ebpf for sidecarless network visibility validation; DeepFlow must still be verified on the selected mode."
   type        = string
   default     = "ebpf"
 

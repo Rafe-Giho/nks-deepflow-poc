@@ -20,8 +20,7 @@
 현재 구축 가이드 경로:
 
 ```text
-1. NHN Cloud NKS -> DeepFlow -> DeepFlow ClickHouse/Grafana -> sidecarless-smoke
-2. NHN Cloud NKS -> Istio Ambient -> Prometheus -> Kiali -> sidecarless-smoke -> optional DeepFlow
+NHN Cloud NKS -> DeepFlow -> DeepFlow ClickHouse/Grafana -> web-was-db visibility
 ```
 
 primary가 아닌 것:
@@ -29,6 +28,7 @@ primary가 아닌 것:
 - Cilium/Hubble
 - 직접 ClickHouse/Grafana manifest
 - echo-server sample workload
+- service mesh 전용 검증 경로
 - `sidecarless-demo`
 - `sidecarless-observability`
 - `sidecarless.network_events`
@@ -50,7 +50,7 @@ AI는 작업 전 다음 순서로 확인합니다.
 
 ```powershell
 rg --files
-rg -n "Istio|Ambient|DeepFlow|deleted|deprecated|sidecarless-smoke|terraform apply" README.md docs infra
+rg -n "DeepFlow|deleted|deprecated|terraform apply" README.md docs infra
 ```
 
 ## 4. 작업 유형별 원칙
@@ -65,19 +65,16 @@ rg -n "Istio|Ambient|DeepFlow|deleted|deprecated|sidecarless-smoke|terraform app
 ### 문서 수정
 
 - `docs/ai/00-project-source-of-truth.md`와 충돌하지 않게 수정
-- 구축 경로 선택 기준은 `docs/team/01-build-guide.md`에 반영
-- DeepFlow 단독 명령은 `docs/team/build-guide-deepflow-only.md`에 반영
-- Istio Ambient + Kiali 명령은 `docs/team/build-guide-istio-ambient-kiali.md`에 반영
+- 구축 기준은 `docs/team/01-build-guide.md`에 반영
+- DeepFlow 구축 명령은 `docs/team/build-guide-deepflow-only.md`에 반영
 - 이론 설명은 `docs/team/02-tool-concepts.md`에 반영
 - AI 작업 기준은 `docs/ai/01-ai-work-harness.md` 또는 `AGENTS.md`에 반영
 
 ### Kubernetes 하네스 수정
 
 - primary 경로만 수정
-- smoke app은 `infra/apps/smoke`
-- Istio Ambient는 `infra/mesh/istio-ambient`
+- 실제 앱은 `k8s-3tier-app`
 - DeepFlow는 `infra/observability/deepflow`
-- Kiali는 팀 가이드 문서 기준으로 설치하고, 별도 manifest를 만들 때만 `infra/`에 추가
 - Windows PowerShell 실행 래퍼를 새로 만들지 않음
 - 삭제된 과거 manifest를 기본 구축 흐름에 다시 넣지 않음
 

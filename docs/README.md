@@ -25,9 +25,8 @@ AI가 사용자의 요청에 맞게 파일과 가이드를 수정할 때 따라�
 
 주요 파일:
 
-- `01-build-guide.md`: 구축 가이드 선택지
-- `build-guide-deepflow-only.md`: DeepFlow 단독 구축 가이드
-- `build-guide-istio-ambient-kiali.md`: Istio Ambient + Kiali 구축 가이드
+- `01-build-guide.md`: 구축 가이드 진입점
+- `build-guide-deepflow-only.md`: DeepFlow 구축 가이드
 - `02-tool-concepts.md`: 도구와 개념 이론 정리
 - `03-validation-checklist.md`: 단계별 체크리스트
 

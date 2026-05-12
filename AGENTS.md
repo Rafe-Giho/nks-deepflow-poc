@@ -4,14 +4,13 @@
 
 ## 현재 단일 목표
 
-현재 PoC 구축 가이드는 두 경로로 분리한다.
+현재 PoC 구축 경로는 하나입니다.
 
 ```text
-1. NHN Cloud NKS -> DeepFlow -> DeepFlow ClickHouse/Grafana -> sidecarless-smoke
-2. NHN Cloud NKS -> Istio Ambient -> Prometheus -> Kiali -> sidecarless-smoke -> optional DeepFlow
+NHN Cloud NKS -> DeepFlow -> DeepFlow ClickHouse/Grafana -> web-was-db visibility
 ```
 
-이전 Cilium/Hubble, 직접 ClickHouse/Grafana, echo-server sample은 현재 구축 경로가 아니며 재생성하지 않는다.
+이전 Cilium/Hubble, 직접 ClickHouse/Grafana, echo-server sample, mesh 전용 경로는 현재 구축 경로가 아니며 재생성하지 않는다.
 
 ## Source Of Truth
 
@@ -23,7 +22,6 @@
 4. `docs/ai/04-deprecated-paths.md`
 5. `docs/team/01-build-guide.md`
 6. `docs/team/build-guide-deepflow-only.md`
-7. `docs/team/build-guide-istio-ambient-kiali.md`
 
 README보다 위 문서들이 더 구체적인 작업 기준이다.
 
@@ -39,23 +37,21 @@ AI 작업 규칙을 팀 배포용 문서에 섞지 않는다.
 
 수정/확장 기본 경로:
 
-- `infra/mesh/istio-ambient`
 - `infra/observability/deepflow`
-- `infra/apps/smoke`
 - `infra/terraform/nhn-nks`
-- `infra/terraform/modules/istio-ambient`
 - `infra/terraform/modules/deepflow`
+- `k8s-3tier-app`
 
 ## Deleted Historical Paths
 
-이전 direct ClickHouse/Grafana manifest와 echo-server sample은 삭제되었다. 사용자가 명시적으로 복원 요청을 하지 않는 한 다시 만들지 않는다.
+이전 direct ClickHouse/Grafana manifest, echo-server sample, mesh 전용 manifest는 삭제되었다. 사용자가 명시적으로 복원 요청을 하지 않는 한 다시 만들지 않는다.
 
 ## Execution Safety
 
 - `terraform apply` 금지. 사용자가 명시 승인하기 전에는 `plan`까지만 수행한다.
-- `kubectl apply`, `helm install/upgrade`, `istioctl install`은 실제 클러스터 변경이다. 사용자가 실행을 요청한 경우에만 수행한다.
+- `kubectl apply`, `helm install/upgrade`는 실제 클러스터 변경이다. 사용자가 실행을 요청한 경우에만 수행한다.
 - 분석/리뷰 요청에서는 읽기 전용 명령만 사용한다.
-- 최신 NHN Cloud NKS, Istio Ambient, DeepFlow, Terraform provider 정보는 공식 문서를 확인한다.
+- 최신 NHN Cloud NKS, DeepFlow, Terraform provider 정보는 공식 문서를 확인한다.
 - 비밀값, kubeconfig, `terraform.tfvars`, tfstate는 커밋하지 않는다.
 
 ## Change Workflow
@@ -72,7 +68,7 @@ AI 작업 규칙을 팀 배포용 문서에 섞지 않는다.
 기본 검증:
 
 ```powershell
-kubectl kustomize .\infra\apps\smoke
+kubectl apply --dry-run=client -f .\k8s-3tier-app
 C:\terraform\terraform.exe fmt -check -recursive
 C:\terraform\terraform.exe validate
 git diff --check

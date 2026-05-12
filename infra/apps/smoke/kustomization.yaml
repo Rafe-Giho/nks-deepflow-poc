@@ -1,4 +1,0 @@
-resources:
-  - namespace.yaml
-  - postgres-secret.yaml
-  - smoke-web-was-db.yaml

@@ -36,33 +36,16 @@ kubectl auth can-i create daemonsets.apps -n deepflow
 - context
 - node OS/kernel
 - StorageClass
-- Calico mode 추정
+- Calico/Felix 상태
 - 권한 가능 여부
-- DeepFlow/Istio 리스크
+- DeepFlow 리스크
 
-## 3. "Istio Ambient 설치 준비해"
-
-수정 대상:
-
-- `infra/mesh/istio-ambient`
-- `docs/team/build-guide-istio-ambient-kiali.md`
-
-검증:
-
-```powershell
-istioctl version --remote=false
-kubectl get crd gateways.gateway.networking.k8s.io
-```
-
-실제 설치는 사용자가 요청한 경우에만 수행합니다.
-
-## 4. "DeepFlow 설치 준비해"
+## 3. "DeepFlow 설치 준비해"
 
 수정 대상:
 
 - `infra/observability/deepflow`
 - `docs/team/build-guide-deepflow-only.md`
-- `docs/team/build-guide-istio-ambient-kiali.md`
 
 검증:
 
@@ -73,48 +56,47 @@ helm search repo deepflow/deepflow --versions
 
 네트워크가 필요한 검증은 사용자 승인 또는 환경 허용이 필요합니다.
 
-## 5. "smoke app 수정해"
+## 4. "web-was-db 앱 수정해"
 
 수정 대상:
 
-- `infra/apps/smoke`
+- `k8s-3tier-app`
 - `docs/team/build-guide-deepflow-only.md`
-- `docs/team/build-guide-istio-ambient-kiali.md`
 - `docs/team/03-validation-checklist.md`
 
 금지:
 
 - echo-server sample을 기본 경로로 되돌리지 않음
+- 삭제된 임시 검증 앱을 기본 검증 경로로 되돌리지 않음
 - `sidecarless-demo`를 primary namespace로 사용하지 않음
 
 검증:
 
 ```powershell
-kubectl kustomize .\infra\apps\smoke
+kubectl apply --dry-run=client -f .\k8s-3tier-app
 ```
 
-## 6. "문서 최신화해"
+## 5. "문서 최신화해"
 
 수정 우선순위:
 
 1. `docs/ai/00-project-source-of-truth.md`
 2. `docs/team/01-build-guide.md`
 3. `docs/team/build-guide-deepflow-only.md`
-4. `docs/team/build-guide-istio-ambient-kiali.md`
-5. `docs/team/02-tool-concepts.md`
-6. `docs/team/03-validation-checklist.md`
-7. `docs/README.md`
-8. `README.md`
+4. `docs/team/02-tool-concepts.md`
+5. `docs/team/03-validation-checklist.md`
+6. `docs/README.md`
+7. `README.md`
 
 확인:
 
 ```powershell
-rg -n "Cilium|Hubble|sidecarless-demo|sidecarless-observability|network_events|legacy" README.md docs
+rg -n "Cilium|Hubble|sidecarless-demo|sidecarless-observability|network_events|legacy" README.md docs infra
 ```
 
 legacy 언급은 삭제된 과거 산출물, 비범위, 이전 구성 맥락에서만 허용합니다.
 
-## 7. "Terraform 구성해"
+## 6. "Terraform 구성해"
 
 수정 대상:
 
@@ -134,14 +116,13 @@ C:\terraform\terraform.exe validate
 - 민감정보 커밋
 - tfstate 커밋
 
-## 8. "리뷰해"
+## 7. "리뷰해"
 
 관점:
 
 - 현재 구축 경로와 삭제된 과거 경로 혼동
 - 실제 apply/install이 문서 기본 흐름에 들어갔는지
-- 검증 기준이 DeepFlow/Ambient 기준인지
-- Kiali가 필요한 경로와 DeepFlow-only 경로가 섞이지 않았는지
+- 검증 기준이 DeepFlow와 `k8s-3tier-app` 기준인지
 - Terraform apply 금지 위반 여부
 - 오래된 namespace/table/script 참조
 
