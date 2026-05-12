@@ -65,7 +65,7 @@ export POC_ROOT="$HOME/sidecarless-poc"
 export KUBECONFIG="$HOME/.kube/nhn-nks.yaml"
 export GATEWAY_API_VERSION="v1.4.0"
 export ISTIO_RELEASE="release-1.29"
-export DEEPFLOW_VERSION="6.6.018"
+export DEEPFLOW_VERSION="7.1.002"
 
 cd "$POC_ROOT"
 ```
@@ -270,9 +270,10 @@ Kiali baseline을 먼저 확인한 뒤 DeepFlow를 추가합니다.
 
 ```bash
 kubectl get storageclass
-
-export STORAGE_CLASS="$(kubectl get storageclass -o jsonpath='{range .items[?(@.metadata.annotations.storageclass\.kubernetes\.io/is-default-class=="true")]}{.metadata.name}{"\n"}{end}' | head -1)"
-echo "STORAGE_CLASS=${STORAGE_CLASS:-<none>}"
+kubectl get csidriver | grep cinder || true
+kubectl -n kube-system get pods -o wide | grep -i cinder || true
+kubectl apply -f "$POC_ROOT/infra/observability/deepflow/storageclass/sc-cinder.yaml"
+kubectl get storageclass sgh-cinder-sc
 
 helm repo add deepflow https://deepflowio.github.io/deepflow --force-update
 helm repo update deepflow
@@ -287,11 +288,7 @@ kubectl -n deepflow get pods,svc,pvc -o wide
 kubectl -n deepflow wait --for=condition=Ready pod --all --timeout=900s
 ```
 
-StorageClass를 명시해야 하면 설치 명령에 다음 옵션을 추가합니다.
-
-```bash
---set global.storageClass="$STORAGE_CLASS"
-```
+`poc-values.yaml`은 `global.storageClass: sgh-cinder-sc`를 기본값으로 사용합니다.
 
 DeepFlow Grafana에 접속합니다.
 

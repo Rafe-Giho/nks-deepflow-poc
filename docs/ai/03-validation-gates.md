@@ -6,7 +6,7 @@
 
 목표:
 
-- AI가 primary/legacy 경로를 혼동하지 않도록 기준을 고정합니다.
+- AI가 현재 구축 경로와 삭제된 과거 경로를 혼동하지 않도록 기준을 고정합니다.
 
 통과 기준:
 
@@ -34,7 +34,8 @@ rg -n "project-source-of-truth|deprecated-paths|ai-work-harness" README.md AGENT
 
 - kubeconfig context 확인
 - worker node Ready
-- StorageClass 확인
+- NKS `csi-cinder` add-on 확인
+- `sgh-cinder-sc` StorageClass 확인
 - Calico/Felix 상태 확인
 - CRD/DaemonSet/Deployment 생성 권한 확인
 
@@ -44,6 +45,10 @@ rg -n "project-source-of-truth|deprecated-paths|ai-work-harness" README.md AGENT
 kubectl config current-context
 kubectl get nodes -o wide
 kubectl get storageclass
+kubectl get csidriver | grep cinder || true
+kubectl -n kube-system get pods -o wide | grep -i cinder || true
+kubectl get storageclass sgh-cinder-sc \
+  -o jsonpath='{.provisioner}{"\t"}{.parameters.type}{"\t"}{.reclaimPolicy}{"\t"}{.volumeBindingMode}{"\n"}'
 kubectl get nodes -o jsonpath='{range .items[*]}{.metadata.name}{"\t"}{.status.nodeInfo.osImage}{"\t"}{.status.nodeInfo.kernelVersion}{"\n"}{end}'
 kubectl -n kube-system get pods -o wide | egrep -i 'calico|typha|coredns' || true
 kubectl auth can-i create daemonsets.apps -n istio-system
@@ -90,6 +95,7 @@ terraform apply
 - DeepFlow Pod Ready
 - Agent DaemonSet Ready
 - PVC Bound
+- PVC StorageClass가 `sgh-cinder-sc`
 - Grafana 접근 가능
 - smoke traffic이 DeepFlow에서 조회됨
 
@@ -98,12 +104,17 @@ terraform apply
 ```bash
 helm repo add deepflow https://deepflowio.github.io/deepflow --force-update
 helm repo update deepflow
+kubectl apply -f infra/observability/deepflow/storageclass/sc-cinder.yaml
 helm upgrade --install deepflow deepflow/deepflow \
   --namespace deepflow \
   --create-namespace \
-  --version "$DEEPFLOW_VERSION" \
-  -f infra/observability/deepflow/values/poc-values.yaml
+  --version "7.1.002" \
+  -f infra/observability/deepflow/values/poc-values.yaml \
+  --wait \
+  --timeout 20m
 kubectl -n deepflow get pods,svc,pvc -o wide
+kubectl -n deepflow get pvc \
+  -o custom-columns='NAME:.metadata.name,STATUS:.status.phase,SC:.spec.storageClassName,VOLUME:.spec.volumeName'
 kubectl -n deepflow wait --for=condition=Ready pod --all --timeout=900s
 ```
 
@@ -166,6 +177,7 @@ istioctl analyze
 - DeepFlow Pod Ready
 - Agent DaemonSet Ready
 - PVC Bound
+- PVC StorageClass가 `sgh-cinder-sc`
 - Grafana 접근 가능
 - Kiali graph와 DeepFlow Service Map 비교 가능
 
@@ -174,12 +186,17 @@ istioctl analyze
 ```bash
 helm repo add deepflow https://deepflowio.github.io/deepflow --force-update
 helm repo update deepflow
+kubectl apply -f infra/observability/deepflow/storageclass/sc-cinder.yaml
 helm upgrade --install deepflow deepflow/deepflow \
   --namespace deepflow \
   --create-namespace \
-  --version "$DEEPFLOW_VERSION" \
-  -f infra/observability/deepflow/values/poc-values.yaml
+  --version "7.1.002" \
+  -f infra/observability/deepflow/values/poc-values.yaml \
+  --wait \
+  --timeout 20m
 kubectl -n deepflow get pods,svc,pvc -o wide
+kubectl -n deepflow get pvc \
+  -o custom-columns='NAME:.metadata.name,STATUS:.status.phase,SC:.spec.storageClassName,VOLUME:.spec.volumeName'
 kubectl -n deepflow wait --for=condition=Ready pod --all --timeout=900s
 ```
 

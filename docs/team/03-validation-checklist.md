@@ -11,7 +11,8 @@
 - [ ] NKS worker node image UUID 확인
 - [ ] key pair 준비
 - [ ] Kubernetes 버전 확정
-- [ ] StorageClass 확정
+- [ ] NKS `csi-cinder` add-on 추가 확인
+- [ ] `sgh-cinder-sc` StorageClass 확정
 - [ ] `kubectl`, `helm`, `terraform` 준비
 - [ ] Istio Ambient + Kiali 경로를 진행하는 경우 `istioctl` 준비
 
@@ -23,9 +24,11 @@
 - [ ] Calico-VXLAN 또는 Calico-eBPF 확인
 - [ ] Calico/Felix Pod 상태 확인
 - [ ] CoreDNS 정상 동작 확인
+- [ ] `cinder.csi.openstack.org` CSIDriver 확인
+- [ ] `sgh-cinder-sc` StorageClass provisioner/binding 확인
 - [ ] Istio Ambient 설치에 필요한 CRD/cluster-admin 권한 확인
 - [ ] DeepFlow Agent에 필요한 privileged/host/eBPF 수집 조건 확인
-- [ ] default StorageClass 또는 DeepFlow용 StorageClass 확인
+- [ ] DeepFlow용 StorageClass가 `sgh-cinder-sc`인지 확인
 
 ## 2. DeepFlow 단독 경로
 
@@ -35,6 +38,7 @@
 - [ ] `deepflow-server` Ready
 - [ ] DeepFlow ClickHouse Ready
 - [ ] DeepFlow Grafana Ready
+- [ ] DeepFlow PVC가 `sgh-cinder-sc`로 Bound
 - [ ] smoke namespace에서 ambient label 제거 또는 무시 기준 확인
 - [ ] Kubernetes resource AutoTagging 확인
 - [ ] L4 flow log 조회 가능
@@ -67,6 +71,7 @@
 - [ ] `deepflow-server` Ready
 - [ ] DeepFlow ClickHouse Ready
 - [ ] DeepFlow Grafana Ready
+- [ ] DeepFlow PVC가 `sgh-cinder-sc`로 Bound
 - [ ] Kubernetes resource AutoTagging 확인
 - [ ] L4 flow log 조회 가능
 - [ ] L7 request log 조회 가능
