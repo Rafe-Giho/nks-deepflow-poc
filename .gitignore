@@ -26,3 +26,4 @@ terraform.tfvars
 *.secret.yaml
 *.secret.yml
 .env
+k8s-3tier-app/02-sgh-secret.yaml
