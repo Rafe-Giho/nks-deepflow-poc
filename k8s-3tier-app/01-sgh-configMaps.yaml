@@ -1,0 +1,55 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: sgh-web-cm
+  namespace: sgh-web-ns
+data:
+  # WEB(Apache) → WAS(Tomcat) 리버스 프록시 대상
+  TOMCAT_UPSTREAM_HOST: "sgh-was-svc.sgh-was-ns.svc.cluster.local"
+  TOMCAT_UPSTREAM_PORT: "8080"
+
+  # Forward Proxy 허용 IP (POD IP 대역)
+  ALLOWED_PROXY_IP: "10.100.0.0/16"
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: sgh-was-cm
+  namespace: sgh-was-ns
+data:
+  # DB Service FQDN (CoreDNS 사용)
+  DB_HOST: "sgh-db-svc.sgh-db-ns.svc.cluster.local"
+  DB_PORT: "3306"
+  DB_NAME: "board"
+
+  # 외부 Dog API URL
+  DOG_API_URL: "https://dog.ceo/api/breeds/image/random"
+
+  # WAS → WEB(Forward Proxy) 도 Service FQDN 사용
+  HTTP_PROXY_HOST: "sgh-web-svc.sgh-web-ns.svc.cluster.local"
+  HTTP_PROXY_PORT: "80"
+  HTTPS_PROXY_HOST: "sgh-web-svc.sgh-web-ns.svc.cluster.local"
+  HTTPS_PROXY_PORT: "80"
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: sgh-db-cm
+  namespace: sgh-db-ns
+data:
+  MARIADB_DATABASE: "board"
+  MARIADB_USER: "giho"
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: sgh-db-init-sql
+  namespace: sgh-db-ns
+data:
+  01-create-posts.sql: |
+    CREATE TABLE IF NOT EXISTS posts (
+      id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+      title VARCHAR(255) NOT NULL,
+      content TEXT NOT NULL,
+      regdate TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+    ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;

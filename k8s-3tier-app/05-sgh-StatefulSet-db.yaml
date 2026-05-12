@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: sgh-db-sts
+  namespace: sgh-db-ns
+spec:
+  serviceName: sgh-db
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sgh-db
+  template:
+    metadata:
+      labels:
+        app: sgh-db
+    spec:
+      containers:
+        - name: mariadb
+          image: shinkiho/sgh-db:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 3306
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: sgh-db-sec
+                  key: root_password
+            - name: MARIADB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: sgh-db-sec
+                  key: db_password
+
+            - name: MARIADB_DATABASE
+              valueFrom:
+                configMapKeyRef:
+                  name: sgh-db-cm
+                  key: MARIADB_DATABASE
+            - name: MARIADB_USER
+              valueFrom:
+                configMapKeyRef:
+                  name: sgh-db-cm
+                  key: MARIADB_USER
+          volumeMounts:
+            - name: db-data
+              mountPath: /var/lib/mysql
+            - name: db-init-sql
+              mountPath: /docker-entrypoint-initdb.d/01-create-posts.sql
+              subPath: 01-create-posts.sql
+      volumes:
+        - name: db-data
+          persistentVolumeClaim:
+            claimName: sgh-db-pvc
+        - name: db-init-sql
+          configMap:
+            name: sgh-db-init-sql

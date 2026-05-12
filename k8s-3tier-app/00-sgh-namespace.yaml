@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name:  sgh-web-ns
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name:  sgh-was-ns
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name:  sgh-db-ns

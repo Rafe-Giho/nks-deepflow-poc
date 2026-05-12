@@ -1,0 +1,82 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sgh-was-dpl
+  namespace: sgh-was-ns
+  labels:
+    app: sgh-was
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: sgh-was
+  template:
+    metadata:
+      labels:
+        app: sgh-was
+    spec:
+      initContainers:
+        - name: wait-for-db
+          image: busybox:1.31
+          command: ['sh', '-c', "until nslookup sgh-db-svc.sgh-db-ns.svc.cluster.local; do echo waiting for db; sleep 2; done"]
+      containers:
+        - name: tomcat
+          image: shinkiho/sgh-was:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+          env:
+            - name: DB_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: sgh-was-cm
+                  key: DB_HOST
+            - name: DB_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: sgh-was-cm
+                  key: DB_PORT
+            - name: DB_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: sgh-was-cm
+                  key: DB_NAME
+            - name: DOG_API_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: sgh-was-cm
+                  key: DOG_API_URL
+            - name: HTTP_PROXY_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: sgh-was-cm
+                  key: HTTP_PROXY_HOST
+            - name: HTTP_PROXY_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: sgh-was-cm
+                  key: HTTP_PROXY_PORT
+            - name: HTTPS_PROXY_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: sgh-was-cm
+                  key: HTTPS_PROXY_HOST
+            - name: HTTPS_PROXY_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: sgh-was-cm
+                  key: HTTPS_PROXY_PORT
+          readinessProbe:
+            httpGet:
+              path: /sgh/
+              port: 8080
+            initialDelaySeconds: 30
+            timeoutSeconds: 3
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /sgh/
+              port: 8080
+            initialDelaySeconds: 40
+            periodSeconds: 20
+            timeoutSeconds: 3

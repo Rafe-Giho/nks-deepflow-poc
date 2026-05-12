@@ -1,0 +1,23 @@
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: sgh-cinder-sc
+provisioner: cinder.csi.openstack.org
+parameters:
+  type: General HDD
+reclaimPolicy: Retain
+volumeBindingMode: Immediate
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: sgh-db-pvc
+  namespace: sgh-db-ns
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: sgh-cinder-sc
+  resources:
+    requests:
+      storage: 100Gi
+  volumeMode: Filesystem

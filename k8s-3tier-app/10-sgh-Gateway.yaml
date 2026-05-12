@@ -1,0 +1,87 @@
+# Requires NGINX Gateway Fabric installed with GatewayClass name "nginx".
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: sgh-web-gateway
+  namespace: sgh-web-ns
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+spec:
+  gatewayClassName: nginx
+  infrastructure:
+    labels:
+      app.kubernetes.io/part-of: sgh-3tier
+      app.kubernetes.io/component: nginx-gateway
+  listeners:
+    - name: http
+      hostname: www.jininfra.cloud
+      port: 80
+      protocol: HTTP
+      allowedRoutes:
+        namespaces:
+          from: Same
+    - name: https
+      hostname: www.jininfra.cloud
+      port: 443
+      protocol: HTTPS
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - name: jininfra-tls
+      allowedRoutes:
+        namespaces:
+          from: Same
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: sgh-web-http-redirect
+  namespace: sgh-web-ns
+spec:
+  parentRefs:
+    - name: sgh-web-gateway
+      sectionName: http
+  hostnames:
+    - www.jininfra.cloud
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /sgh
+      filters:
+        - type: RequestRedirect
+          requestRedirect:
+            scheme: https
+            statusCode: 301
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: sgh-web-route
+  namespace: sgh-web-ns
+spec:
+  parentRefs:
+    - name: sgh-web-gateway
+      sectionName: https
+  hostnames:
+    - www.jininfra.cloud
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /sgh
+      backendRefs:
+        - name: sgh-web-svc
+          port: 80
+---
+apiVersion: gateway.nginx.org/v1alpha1
+kind: UpstreamSettingsPolicy
+metadata:
+  name: sgh-web-session-affinity
+  namespace: sgh-web-ns
+spec:
+  targetRefs:
+    - group: core
+      kind: Service
+      name: sgh-web-svc
+  loadBalancingMethod: ip_hash

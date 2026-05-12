@@ -1,0 +1,309 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: sgh-web-deny-all
+  namespace: sgh-web-ns
+spec:
+  podSelector: {}
+  policyTypes:
+  - Ingress
+  - Egress
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: sgh-web-allow
+  namespace: sgh-web-ns
+spec:
+  podSelector:
+    matchLabels:
+      app: sgh-web
+  policyTypes:
+  - Ingress
+  - Egress
+
+  ingress:
+    # 1) NGINX Gateway Fabric data plane -> WEB (80)
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: sgh-web-ns
+          podSelector:
+            matchLabels:
+              gateway.networking.k8s.io/gateway-name: sgh-web-gateway
+      ports:
+        - protocol: TCP
+          port: 80
+
+    # 2) WAS → WEB (Forward Proxy 용, 80)
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: sgh-was-ns
+          podSelector:
+            matchLabels:
+              app: sgh-was
+      ports:
+        - protocol: TCP
+          port: 80
+
+  egress:
+    # 3) WEB → WAS (Reverse Proxy 대상, 8080)
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: sgh-was-ns
+          podSelector:
+            matchLabels:
+              app: sgh-was
+      ports:
+        - protocol: TCP
+          port: 8080
+
+    # 4) WEB → DNS (CoreDNS)
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: kube-system
+          podSelector:
+            matchLabels:
+              k8s-app: kube-dns
+      ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53
+
+    # 5) WEB → 외부 인터넷 (Proxy로 외부 API 호출용)
+    - to:
+        - ipBlock:
+            cidr: 0.0.0.0/0
+      ports:
+        - protocol: TCP
+          port: 80
+        - protocol: TCP
+          port: 443
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: sgh-nginx-gateway-allow
+  namespace: sgh-web-ns
+spec:
+  podSelector:
+    matchLabels:
+      gateway.networking.k8s.io/gateway-name: sgh-web-gateway
+  policyTypes:
+  - Ingress
+  - Egress
+
+  ingress:
+    # External client/LB -> NGINX Gateway Fabric data plane
+    - from:
+        - ipBlock:
+            cidr: 0.0.0.0/0
+      ports:
+        - protocol: TCP
+          port: 80
+        - protocol: TCP
+          port: 443
+
+    # Kubelet/cluster health probe -> NGINX Gateway Fabric readiness endpoint
+    - from:
+        - ipBlock:
+            cidr: 0.0.0.0/0
+      ports:
+        - protocol: TCP
+          port: 8081
+
+  egress:
+    # NGINX Gateway Fabric data plane -> control plane
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: nginx-gateway
+      ports:
+        - protocol: TCP
+          port: 443
+        - protocol: TCP
+          port: 8443
+
+    # NGINX Gateway Fabric data plane -> WEB backend
+    - to:
+        - podSelector:
+            matchLabels:
+              app: sgh-web
+      ports:
+        - protocol: TCP
+          port: 80
+
+    # NGINX Gateway Fabric data plane -> cert-manager HTTP-01 solver
+    - to:
+        - podSelector: {}
+      ports:
+        - protocol: TCP
+          port: 8089
+
+    # NGINX Gateway Fabric data plane -> DNS
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: kube-system
+          podSelector:
+            matchLabels:
+              k8s-app: kube-dns
+      ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: sgh-acme-http01-solver-allow
+  namespace: sgh-web-ns
+spec:
+  podSelector: {}
+  policyTypes:
+  - Ingress
+
+  ingress:
+    # NGINX Gateway Fabric data plane -> cert-manager HTTP-01 solver pod
+    - from:
+        - podSelector:
+            matchLabels:
+              gateway.networking.k8s.io/gateway-name: sgh-web-gateway
+      ports:
+        - protocol: TCP
+          port: 8089
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: sgh-was-deny-all
+  namespace: sgh-was-ns
+spec:
+  podSelector: {}
+  policyTypes:
+  - Ingress
+  - Egress
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: sgh-was-allow
+  namespace: sgh-was-ns
+spec:
+  podSelector:
+    matchLabels:
+      app: sgh-was
+  policyTypes:
+  - Ingress
+  - Egress
+
+  ingress:
+    # 1) WEB → WAS (8080)
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: sgh-web-ns
+          podSelector:
+            matchLabels:
+              app: sgh-web
+      ports:
+        - protocol: TCP
+          port: 8080
+
+  egress:
+    # 2) WAS → DB (3306)
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: sgh-db-ns
+          podSelector:
+            matchLabels:
+              app: sgh-db
+      ports:
+        - protocol: TCP
+          port: 3306
+
+    # 3) WAS → WEB (Forward Proxy로 외부 나갈 때, 80)
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: sgh-web-ns
+          podSelector:
+            matchLabels:
+              app: sgh-web
+      ports:
+        - protocol: TCP
+          port: 80
+        - protocol: TCP
+          port: 443
+
+    # 4) WAS → DNS
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: kube-system
+          podSelector:
+            matchLabels:
+              k8s-app: kube-dns
+      ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: sgh-db-deny-all
+  namespace: sgh-db-ns
+spec:
+  podSelector: {}
+  policyTypes:
+  - Ingress
+  - Egress
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: sgh-db-allow
+  namespace: sgh-db-ns
+spec:
+  podSelector:
+    matchLabels:
+      app: sgh-db
+  policyTypes:
+  - Ingress
+  - Egress
+
+  ingress:
+    # 1) WAS → DB (3306)
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: sgh-was-ns
+          podSelector:
+            matchLabels:
+              app: sgh-was
+      ports:
+        - protocol: TCP
+          port: 3306
+
+  egress:
+    # 2) DB → DNS (필요시)
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: kube-system
+          podSelector:
+            matchLabels:
+              k8s-app: kube-dns
+      ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53

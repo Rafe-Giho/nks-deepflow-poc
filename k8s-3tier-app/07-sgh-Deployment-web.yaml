@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sgh-web-dpl
+  namespace: sgh-web-ns
+  labels:
+    app: sgh-web
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: sgh-web
+  template:
+    metadata:
+      labels:
+        app: sgh-web
+    spec:
+      initContainers:
+        - name: wait-for-was
+          image: busybox:1.31
+          command: ['sh', '-c', "until nslookup sgh-was-svc.sgh-was-ns.svc.cluster.local; do echo waiting for db; sleep 2; done"]
+      containers:
+        - name: httpd
+          image: shinkiho/sgh-web:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 80
+          env:
+            - name: VHOST_SERVER_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+
+            - name: TOMCAT_UPSTREAM_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: sgh-web-cm
+                  key: TOMCAT_UPSTREAM_HOST
+            - name: TOMCAT_UPSTREAM_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: sgh-web-cm
+                  key: TOMCAT_UPSTREAM_PORT
+
+            - name: ALLOWED_PROXY_IP
+              valueFrom:
+                configMapKeyRef:
+                  name: sgh-web-cm
+                  key: ALLOWED_PROXY_IP
+
+          readinessProbe:
+            httpGet:
+              path: /sgh/
+              port: 80
+            initialDelaySeconds: 10
+            timeoutSeconds: 3
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /sgh/
+              port: 80
+            initialDelaySeconds: 30
+            timeoutSeconds: 3
+            periodSeconds: 20

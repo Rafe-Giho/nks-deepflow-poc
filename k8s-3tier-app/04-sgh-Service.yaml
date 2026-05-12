@@ -1,0 +1,48 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: sgh-db-svc
+  namespace: sgh-db-ns
+  labels:
+    app: sgh-db
+spec:
+  type: ClusterIP
+  selector:
+    app: sgh-db
+  ports:
+    - name: mysql
+      port: 3306
+      targetPort: 3306
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: sgh-was-svc
+  namespace: sgh-was-ns
+  labels:
+    app: sgh-was
+spec:
+  type: ClusterIP
+  selector:
+    app: sgh-was
+  sessionAffinity: ClientIP
+  ports:
+    - name: http
+      port: 8080
+      targetPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: sgh-web-svc
+  namespace: sgh-web-ns
+  labels:
+    app: sgh-web
+spec:
+  type: ClusterIP
+  selector:
+    app: sgh-web
+  ports:
+    - name: http
+      port: 80
+      targetPort: 80
