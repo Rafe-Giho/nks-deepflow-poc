@@ -1,5 +1,3 @@
 global:
   replicas: 1
-
-# Set this at install time when NKS has a non-default storage class:
-# helm upgrade --install deepflow deepflow/deepflow --set global.storageClass="<storage-class-name>"
+  storageClass: sgh-cinder-sc

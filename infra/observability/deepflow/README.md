@@ -5,9 +5,9 @@ DeepFlow를 NHN Cloud NKS에 설치해 L4 flow, L7 request log, AutoTracing을 �
 ## 기준
 
 - 공식 DeepFlow Helm chart 사용
-- PoC 기본 chart version: `6.6.018`
+- PoC 검증 chart version: `7.1.002`
 - DeepFlow chart가 구성하는 ClickHouse/Grafana를 1차 경로로 사용
-- 별도 ClickHouse/Grafana manifest는 fallback 또는 비교용
+- NKS `csi-cinder` add-on과 `sgh-cinder-sc` StorageClass 사용
 
 ## 설치
 
@@ -17,23 +17,18 @@ DeepFlow 단독 구축은 `docs/team/build-guide-deepflow-only.md`를 기준으�
 helm repo add deepflow https://deepflowio.github.io/deepflow --force-update
 helm repo update deepflow
 
+kubectl apply -f infra/observability/deepflow/storageclass/sc-cinder.yaml
+
 helm upgrade --install deepflow deepflow/deepflow \
   --namespace deepflow \
   --create-namespace \
-  --version "$DEEPFLOW_VERSION" \
-  -f infra/observability/deepflow/values/poc-values.yaml
-```
-
-StorageClass를 명시해야 하면 다음처럼 실행합니다.
-
-```bash
-helm upgrade --install deepflow deepflow/deepflow \
-  --namespace deepflow \
-  --create-namespace \
-  --version "$DEEPFLOW_VERSION" \
+  --version "7.1.002" \
   -f infra/observability/deepflow/values/poc-values.yaml \
-  --set global.storageClass="<storage-class-name>"
+  --wait \
+  --timeout 20m
 ```
+
+`poc-values.yaml`은 `global.storageClass: sgh-cinder-sc`를 기본값으로 사용합니다.
 
 ## 확인
 

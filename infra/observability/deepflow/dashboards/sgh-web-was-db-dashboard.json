@@ -1,0 +1,973 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": "-- Grafana --",
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "target": {
+          "limit": 100,
+          "matchAny": false,
+          "tags": [],
+          "type": "dashboard"
+        },
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": null,
+  "links": [],
+  "liveNow": false,
+  "panels": [
+    {
+      "datasource": "$datasource",
+      "gridPos": {
+        "h": 3,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "id": 1,
+      "options": {
+        "code": {
+          "language": "plaintext",
+          "showLineNumbers": false,
+          "showMiniMap": false
+        },
+        "content": "## Selected Kubernetes traffic\n\nUse cluster, namespace, and resource variables to view the same traffic by workload, pod, service, or node unit.",
+        "mode": "markdown"
+      },
+      "pluginVersion": "10.4.3",
+      "title": "Selected Kubernetes Flow",
+      "type": "text"
+    },
+    {
+      "_comment": "DeepFlow simpleTopo by resource type. Uses variables only; no hard-coded DeepFlow IDs or resource names.",
+      "datasource": "$deepflow_datasource",
+      "description": "Groups traffic by Kubernetes workload, such as Deployment or StatefulSet. Select namespace/workload variables to narrow the scope.",
+      "gridPos": {
+        "h": 12,
+        "w": 12,
+        "x": 0,
+        "y": 3
+      },
+      "id": 11,
+      "options": {
+        "metricsUnits": {
+          "bps": "bps"
+        },
+        "topoSettings": {
+          "nodeTags": [
+            "node_type",
+            "observation_point"
+          ],
+          "type": "simpleTopo"
+        }
+      },
+      "targets": [
+        {
+          "queryText": "{\"appType\":\"accessRelationship\",\"db\":\"flow_metrics\",\"sources\":\"1m\",\"from\":\"network_map\",\"select\":[{\"type\":\"metric\",\"key\":\"byte\",\"func\":\"Avg\",\"op\":\"\",\"val\":\"\",\"as\":\"Traffic bps\",\"params\":[],\"uuid\":\"a0f1d533-dff1-5f56-9e08-7e4e4dc6f5e3\",\"subFuncs\":[{\"func\":\"Math\",\"op\":\"MULTIPLY\",\"params\":[8]},{\"func\":\"PerSecond\"}],\"whereOnly\":false},{\"type\":\"metric\",\"key\":\"rtt\",\"func\":\"Avg\",\"op\":\"\",\"val\":\"\",\"as\":\"RTT\",\"params\":[],\"uuid\":\"798012c7-8ac1-2c95-7951-1437ff0fc5b8\",\"subFuncs\":[],\"whereOnly\":false},{\"type\":\"metric\",\"key\":\"retrans_ratio\",\"func\":\"Avg\",\"op\":\"\",\"val\":\"\",\"as\":\"Retransmission %\",\"params\":[],\"uuid\":\"93b6c2a3-0fe8-f395-b93f-4bbd34907c69\",\"subFuncs\":[],\"whereOnly\":false},{\"type\":\"metric\",\"key\":\"tcp_establish_fail_ratio\",\"func\":\"Avg\",\"op\":\"\",\"val\":\"\",\"as\":\"TCP Establish Fail %\",\"params\":[],\"uuid\":\"e4ff95e7-ccc2-a39b-e40a-33b909affb1e\",\"subFuncs\":[],\"whereOnly\":false}],\"where\":[{\"type\":\"tag\",\"key\":\"pod_cluster_0\",\"func\":\"\",\"op\":\"LIKE\",\"val\":[{\"label\":\"$cluster\",\"value\":\"cluster\",\"isVariable\":true}],\"as\":\"\",\"params\":[],\"uuid\":\"c7e13d8e-88e2-4ef2-b6e6-563f6f480a01\",\"subFuncs\":[],\"whereOnly\":false},{\"type\":\"tag\",\"key\":\"pod_cluster_1\",\"func\":\"\",\"op\":\"LIKE\",\"val\":[{\"label\":\"$cluster\",\"value\":\"cluster\",\"isVariable\":true}],\"as\":\"\",\"params\":[],\"uuid\":\"d5f26b22-54d3-732c-0673-472d3c9a9e77\",\"subFuncs\":[],\"whereOnly\":false},{\"type\":\"tag\",\"key\":\"pod_ns_0\",\"func\":\"\",\"op\":\"LIKE\",\"val\":[{\"label\":\"$namespace\",\"value\":\"namespace\",\"isVariable\":true}],\"as\":\"\",\"params\":[],\"uuid\":\"ea53f834-7a15-4e6d-8262-662f8e89d170\",\"subFuncs\":[],\"whereOnly\":false},{\"type\":\"tag\",\"key\":\"pod_ns_1\",\"func\":\"\",\"op\":\"LIKE\",\"val\":[{\"label\":\"$namespace\",\"value\":\"namespace\",\"isVariable\":true}],\"as\":\"\",\"params\":[],\"uuid\":\"c6eb170b-d0db-879a-ad9f-65673669682d\",\"subFuncs\":[],\"whereOnly\":false},{\"type\":\"tag\",\"key\":\"pod_group_0\",\"func\":\"\",\"op\":\"LIKE\",\"val\":[{\"label\":\"$workload\",\"value\":\"workload\",\"isVariable\":true}],\"as\":\"\",\"params\":[],\"uuid\":\"fa107b79-4a18-4bc6-8d74-b88f9d2c1000\",\"subFuncs\":[],\"whereOnly\":false},{\"type\":\"tag\",\"key\":\"pod_group_1\",\"func\":\"\",\"op\":\"LIKE\",\"val\":[{\"label\":\"$workload\",\"value\":\"workload\",\"isVariable\":true}],\"as\":\"\",\"params\":[],\"uuid\":\"33fa3302-c691-60df-22d1-8ec1d0758e75\",\"subFuncs\":[],\"whereOnly\":false}],\"having\":[{\"type\":\"metric\",\"key\":\"\",\"func\":\"\",\"op\":\"\",\"val\":\"\",\"as\":\"\",\"params\":[],\"uuid\":\"1f4673b2-d389-0cb5-6d2e-c286dc1ed557\"}],\"groupBy\":[{\"type\":\"tag\",\"key\":\"pod_group_0\",\"func\":\"\",\"op\":\"\",\"val\":\"\",\"as\":\"\",\"params\":[],\"uuid\":\"cdd358e4-e0bd-ae91-d8c7-06d8bfcd9243\",\"sideType\":\"from\",\"subFuncs\":[],\"whereOnly\":false,\"isResourceType\":true},{\"type\":\"tag\",\"key\":\"pod_group_1\",\"func\":\"\",\"op\":\"\",\"val\":\"\",\"as\":\"\",\"params\":[],\"uuid\":\"2f65b9cb-5ac6-0dc2-73d9-2fd7af05acbd\",\"sideType\":\"to\",\"subFuncs\":[],\"whereOnly\":false,\"isResourceType\":true},{\"type\":\"tag\",\"key\":\"observation_point\",\"func\":\"\",\"op\":\"\",\"val\":\"\",\"as\":\"\",\"params\":[],\"uuid\":\"aea3aba4-1925-d85b-088a-e117207d95f4\",\"subFuncs\":[],\"whereOnly\":false,\"isResourceType\":false}],\"orderBy\":[{\"type\":\"metric\",\"key\":\"\",\"func\":\"\",\"op\":\"\",\"val\":\"\",\"as\":\"\",\"params\":[],\"uuid\":\"b0d1325b-4cfa-f690-c821-e42caae24525\",\"sort\":\"asc\"}],\"interval\":\"\",\"limit\":\"200\",\"offset\":\"\",\"formatAs\":\"\",\"alias\":\"\",\"showMetrics\":-1,\"tracingId\":null}",
+          "refId": "A",
+          "returnMetrics": [
+            {
+              "displayName": "Traffic bps",
+              "name": "Traffic bps",
+              "type": 1,
+              "unit": "bps"
+            }
+          ]
+        }
+      ],
+      "title": "Resource Map - Workload Unit",
+      "type": "deepflowio-topo-panel"
+    },
+    {
+      "_comment": "DeepFlow simpleTopo by resource type. Uses variables only; no hard-coded DeepFlow IDs or resource names.",
+      "datasource": "$deepflow_datasource",
+      "description": "Shows pod-to-pod traffic. Select namespace or pod variables to reduce node count.",
+      "gridPos": {
+        "h": 12,
+        "w": 12,
+        "x": 12,
+        "y": 3
+      },
+      "id": 10,
+      "options": {
+        "metricsUnits": {
+          "bps": "bps"
+        },
+        "topoSettings": {
+          "nodeTags": [
+            "node_type",
+            "observation_point"
+          ],
+          "type": "simpleTopo"
+        }
+      },
+      "targets": [
+        {
+          "queryText": "{\"appType\":\"accessRelationship\",\"db\":\"flow_metrics\",\"sources\":\"1m\",\"from\":\"network_map\",\"select\":[{\"type\":\"metric\",\"key\":\"byte\",\"func\":\"Avg\",\"op\":\"\",\"val\":\"\",\"as\":\"Traffic bps\",\"params\":[],\"uuid\":\"a0f1d533-dff1-5f56-9e08-7e4e4dc6f5e3\",\"subFuncs\":[{\"func\":\"Math\",\"op\":\"MULTIPLY\",\"params\":[8]},{\"func\":\"PerSecond\"}],\"whereOnly\":false},{\"type\":\"metric\",\"key\":\"rtt\",\"func\":\"Avg\",\"op\":\"\",\"val\":\"\",\"as\":\"RTT\",\"params\":[],\"uuid\":\"798012c7-8ac1-2c95-7951-1437ff0fc5b8\",\"subFuncs\":[],\"whereOnly\":false},{\"type\":\"metric\",\"key\":\"retrans_ratio\",\"func\":\"Avg\",\"op\":\"\",\"val\":\"\",\"as\":\"Retransmission %\",\"params\":[],\"uuid\":\"93b6c2a3-0fe8-f395-b93f-4bbd34907c69\",\"subFuncs\":[],\"whereOnly\":false},{\"type\":\"metric\",\"key\":\"tcp_establish_fail_ratio\",\"func\":\"Avg\",\"op\":\"\",\"val\":\"\",\"as\":\"TCP Establish Fail %\",\"params\":[],\"uuid\":\"e4ff95e7-ccc2-a39b-e40a-33b909affb1e\",\"subFuncs\":[],\"whereOnly\":false}],\"where\":[{\"type\":\"tag\",\"key\":\"pod_cluster_0\",\"func\":\"\",\"op\":\"LIKE\",\"val\":[{\"label\":\"$cluster\",\"value\":\"cluster\",\"isVariable\":true}],\"as\":\"\",\"params\":[],\"uuid\":\"c7e13d8e-88e2-4ef2-b6e6-563f6f480a01\",\"subFuncs\":[],\"whereOnly\":false},{\"type\":\"tag\",\"key\":\"pod_cluster_1\",\"func\":\"\",\"op\":\"LIKE\",\"val\":[{\"label\":\"$cluster\",\"value\":\"cluster\",\"isVariable\":true}],\"as\":\"\",\"params\":[],\"uuid\":\"d5f26b22-54d3-732c-0673-472d3c9a9e77\",\"subFuncs\":[],\"whereOnly\":false},{\"type\":\"tag\",\"key\":\"pod_ns_0\",\"func\":\"\",\"op\":\"LIKE\",\"val\":[{\"label\":\"$namespace\",\"value\":\"namespace\",\"isVariable\":true}],\"as\":\"\",\"params\":[],\"uuid\":\"ea53f834-7a15-4e6d-8262-662f8e89d170\",\"subFuncs\":[],\"whereOnly\":false},{\"type\":\"tag\",\"key\":\"pod_ns_1\",\"func\":\"\",\"op\":\"LIKE\",\"val\":[{\"label\":\"$namespace\",\"value\":\"namespace\",\"isVariable\":true}],\"as\":\"\",\"params\":[],\"uuid\":\"c6eb170b-d0db-879a-ad9f-65673669682d\",\"subFuncs\":[],\"whereOnly\":false},{\"type\":\"tag\",\"key\":\"pod_0\",\"func\":\"\",\"op\":\"LIKE\",\"val\":[{\"label\":\"$pod\",\"value\":\"pod\",\"isVariable\":true}],\"as\":\"\",\"params\":[],\"uuid\":\"fa107b79-4a18-4bc6-8d74-b88f9d2c1000\",\"subFuncs\":[],\"whereOnly\":false},{\"type\":\"tag\",\"key\":\"pod_1\",\"func\":\"\",\"op\":\"LIKE\",\"val\":[{\"label\":\"$pod\",\"value\":\"pod\",\"isVariable\":true}],\"as\":\"\",\"params\":[],\"uuid\":\"33fa3302-c691-60df-22d1-8ec1d0758e75\",\"subFuncs\":[],\"whereOnly\":false}],\"having\":[{\"type\":\"metric\",\"key\":\"\",\"func\":\"\",\"op\":\"\",\"val\":\"\",\"as\":\"\",\"params\":[],\"uuid\":\"1f4673b2-d389-0cb5-6d2e-c286dc1ed557\"}],\"groupBy\":[{\"type\":\"tag\",\"key\":\"pod_0\",\"func\":\"\",\"op\":\"\",\"val\":\"\",\"as\":\"\",\"params\":[],\"uuid\":\"cdd358e4-e0bd-ae91-d8c7-06d8bfcd9243\",\"sideType\":\"from\",\"subFuncs\":[],\"whereOnly\":false,\"isResourceType\":true},{\"type\":\"tag\",\"key\":\"pod_1\",\"func\":\"\",\"op\":\"\",\"val\":\"\",\"as\":\"\",\"params\":[],\"uuid\":\"2f65b9cb-5ac6-0dc2-73d9-2fd7af05acbd\",\"sideType\":\"to\",\"subFuncs\":[],\"whereOnly\":false,\"isResourceType\":true},{\"type\":\"tag\",\"key\":\"observation_point\",\"func\":\"\",\"op\":\"\",\"val\":\"\",\"as\":\"\",\"params\":[],\"uuid\":\"aea3aba4-1925-d85b-088a-e117207d95f4\",\"subFuncs\":[],\"whereOnly\":false,\"isResourceType\":false}],\"orderBy\":[{\"type\":\"metric\",\"key\":\"\",\"func\":\"\",\"op\":\"\",\"val\":\"\",\"as\":\"\",\"params\":[],\"uuid\":\"b0d1325b-4cfa-f690-c821-e42caae24525\",\"sort\":\"asc\"}],\"interval\":\"\",\"limit\":\"200\",\"offset\":\"\",\"formatAs\":\"\",\"alias\":\"\",\"showMetrics\":-1,\"tracingId\":null}",
+          "refId": "A",
+          "returnMetrics": [
+            {
+              "displayName": "Traffic bps",
+              "name": "Traffic bps",
+              "type": 1,
+              "unit": "bps"
+            }
+          ]
+        }
+      ],
+      "title": "Resource Map - Pod Unit",
+      "type": "deepflowio-topo-panel"
+    },
+    {
+      "_comment": "DeepFlow simpleTopo by resource type. Uses variables only; no hard-coded DeepFlow IDs or resource names.",
+      "datasource": "$deepflow_datasource",
+      "description": "Shows service-first traffic using DeepFlow auto_service tags. Useful for service VIP and Kubernetes Service views.",
+      "gridPos": {
+        "h": 12,
+        "w": 12,
+        "x": 0,
+        "y": 15
+      },
+      "id": 12,
+      "options": {
+        "metricsUnits": {
+          "bps": "bps"
+        },
+        "topoSettings": {
+          "nodeTags": [
+            "node_type",
+            "observation_point"
+          ],
+          "type": "simpleTopo"
+        }
+      },
+      "targets": [
+        {
+          "queryText": "{\"appType\":\"accessRelationship\",\"db\":\"flow_metrics\",\"sources\":\"1m\",\"from\":\"network_map\",\"select\":[{\"type\":\"metric\",\"key\":\"byte\",\"func\":\"Avg\",\"op\":\"\",\"val\":\"\",\"as\":\"Traffic bps\",\"params\":[],\"uuid\":\"a0f1d533-dff1-5f56-9e08-7e4e4dc6f5e3\",\"subFuncs\":[{\"func\":\"Math\",\"op\":\"MULTIPLY\",\"params\":[8]},{\"func\":\"PerSecond\"}],\"whereOnly\":false},{\"type\":\"metric\",\"key\":\"rtt\",\"func\":\"Avg\",\"op\":\"\",\"val\":\"\",\"as\":\"RTT\",\"params\":[],\"uuid\":\"798012c7-8ac1-2c95-7951-1437ff0fc5b8\",\"subFuncs\":[],\"whereOnly\":false},{\"type\":\"metric\",\"key\":\"retrans_ratio\",\"func\":\"Avg\",\"op\":\"\",\"val\":\"\",\"as\":\"Retransmission %\",\"params\":[],\"uuid\":\"93b6c2a3-0fe8-f395-b93f-4bbd34907c69\",\"subFuncs\":[],\"whereOnly\":false},{\"type\":\"metric\",\"key\":\"tcp_establish_fail_ratio\",\"func\":\"Avg\",\"op\":\"\",\"val\":\"\",\"as\":\"TCP Establish Fail %\",\"params\":[],\"uuid\":\"e4ff95e7-ccc2-a39b-e40a-33b909affb1e\",\"subFuncs\":[],\"whereOnly\":false}],\"where\":[{\"type\":\"tag\",\"key\":\"pod_cluster_0\",\"func\":\"\",\"op\":\"LIKE\",\"val\":[{\"label\":\"$cluster\",\"value\":\"cluster\",\"isVariable\":true}],\"as\":\"\",\"params\":[],\"uuid\":\"c7e13d8e-88e2-4ef2-b6e6-563f6f480a01\",\"subFuncs\":[],\"whereOnly\":false},{\"type\":\"tag\",\"key\":\"pod_cluster_1\",\"func\":\"\",\"op\":\"LIKE\",\"val\":[{\"label\":\"$cluster\",\"value\":\"cluster\",\"isVariable\":true}],\"as\":\"\",\"params\":[],\"uuid\":\"d5f26b22-54d3-732c-0673-472d3c9a9e77\",\"subFuncs\":[],\"whereOnly\":false},{\"type\":\"tag\",\"key\":\"pod_ns_0\",\"func\":\"\",\"op\":\"LIKE\",\"val\":[{\"label\":\"$namespace\",\"value\":\"namespace\",\"isVariable\":true}],\"as\":\"\",\"params\":[],\"uuid\":\"ea53f834-7a15-4e6d-8262-662f8e89d170\",\"subFuncs\":[],\"whereOnly\":false},{\"type\":\"tag\",\"key\":\"pod_ns_1\",\"func\":\"\",\"op\":\"LIKE\",\"val\":[{\"label\":\"$namespace\",\"value\":\"namespace\",\"isVariable\":true}],\"as\":\"\",\"params\":[],\"uuid\":\"c6eb170b-d0db-879a-ad9f-65673669682d\",\"subFuncs\":[],\"whereOnly\":false},{\"type\":\"tag\",\"key\":\"auto_service_0\",\"func\":\"\",\"op\":\"LIKE\",\"val\":[{\"label\":\"$service\",\"value\":\"service\",\"isVariable\":true}],\"as\":\"\",\"params\":[],\"uuid\":\"fa107b79-4a18-4bc6-8d74-b88f9d2c1000\",\"subFuncs\":[],\"whereOnly\":false},{\"type\":\"tag\",\"key\":\"auto_service_1\",\"func\":\"\",\"op\":\"LIKE\",\"val\":[{\"label\":\"$service\",\"value\":\"service\",\"isVariable\":true}],\"as\":\"\",\"params\":[],\"uuid\":\"33fa3302-c691-60df-22d1-8ec1d0758e75\",\"subFuncs\":[],\"whereOnly\":false}],\"having\":[{\"type\":\"metric\",\"key\":\"\",\"func\":\"\",\"op\":\"\",\"val\":\"\",\"as\":\"\",\"params\":[],\"uuid\":\"1f4673b2-d389-0cb5-6d2e-c286dc1ed557\"}],\"groupBy\":[{\"type\":\"tag\",\"key\":\"auto_service_0\",\"func\":\"\",\"op\":\"\",\"val\":\"\",\"as\":\"\",\"params\":[],\"uuid\":\"cdd358e4-e0bd-ae91-d8c7-06d8bfcd9243\",\"sideType\":\"from\",\"subFuncs\":[],\"whereOnly\":false,\"isResourceType\":true},{\"type\":\"tag\",\"key\":\"auto_service_1\",\"func\":\"\",\"op\":\"\",\"val\":\"\",\"as\":\"\",\"params\":[],\"uuid\":\"2f65b9cb-5ac6-0dc2-73d9-2fd7af05acbd\",\"sideType\":\"to\",\"subFuncs\":[],\"whereOnly\":false,\"isResourceType\":true},{\"type\":\"tag\",\"key\":\"observation_point\",\"func\":\"\",\"op\":\"\",\"val\":\"\",\"as\":\"\",\"params\":[],\"uuid\":\"aea3aba4-1925-d85b-088a-e117207d95f4\",\"subFuncs\":[],\"whereOnly\":false,\"isResourceType\":false}],\"orderBy\":[{\"type\":\"metric\",\"key\":\"\",\"func\":\"\",\"op\":\"\",\"val\":\"\",\"as\":\"\",\"params\":[],\"uuid\":\"b0d1325b-4cfa-f690-c821-e42caae24525\",\"sort\":\"asc\"}],\"interval\":\"\",\"limit\":\"200\",\"offset\":\"\",\"formatAs\":\"\",\"alias\":\"\",\"showMetrics\":-1,\"tracingId\":null}",
+          "refId": "A",
+          "returnMetrics": [
+            {
+              "displayName": "Traffic bps",
+              "name": "Traffic bps",
+              "type": 1,
+              "unit": "bps"
+            }
+          ]
+        }
+      ],
+      "title": "Resource Map - Service Unit",
+      "type": "deepflowio-topo-panel"
+    },
+    {
+      "_comment": "DeepFlow simpleTopo by resource type. Uses variables only; no hard-coded DeepFlow IDs or resource names.",
+      "datasource": "$deepflow_datasource",
+      "description": "Shows Kubernetes node-level traffic using pod_node tags. Use this to see node placement and cross-node paths.",
+      "gridPos": {
+        "h": 12,
+        "w": 12,
+        "x": 12,
+        "y": 15
+      },
+      "id": 13,
+      "options": {
+        "metricsUnits": {
+          "bps": "bps"
+        },
+        "topoSettings": {
+          "nodeTags": [
+            "node_type",
+            "observation_point"
+          ],
+          "type": "simpleTopo"
+        }
+      },
+      "targets": [
+        {
+          "queryText": "{\"appType\":\"accessRelationship\",\"db\":\"flow_metrics\",\"sources\":\"1m\",\"from\":\"network_map\",\"select\":[{\"type\":\"metric\",\"key\":\"byte\",\"func\":\"Avg\",\"op\":\"\",\"val\":\"\",\"as\":\"Traffic bps\",\"params\":[],\"uuid\":\"a0f1d533-dff1-5f56-9e08-7e4e4dc6f5e3\",\"subFuncs\":[{\"func\":\"Math\",\"op\":\"MULTIPLY\",\"params\":[8]},{\"func\":\"PerSecond\"}],\"whereOnly\":false},{\"type\":\"metric\",\"key\":\"rtt\",\"func\":\"Avg\",\"op\":\"\",\"val\":\"\",\"as\":\"RTT\",\"params\":[],\"uuid\":\"798012c7-8ac1-2c95-7951-1437ff0fc5b8\",\"subFuncs\":[],\"whereOnly\":false},{\"type\":\"metric\",\"key\":\"retrans_ratio\",\"func\":\"Avg\",\"op\":\"\",\"val\":\"\",\"as\":\"Retransmission %\",\"params\":[],\"uuid\":\"93b6c2a3-0fe8-f395-b93f-4bbd34907c69\",\"subFuncs\":[],\"whereOnly\":false},{\"type\":\"metric\",\"key\":\"tcp_establish_fail_ratio\",\"func\":\"Avg\",\"op\":\"\",\"val\":\"\",\"as\":\"TCP Establish Fail %\",\"params\":[],\"uuid\":\"e4ff95e7-ccc2-a39b-e40a-33b909affb1e\",\"subFuncs\":[],\"whereOnly\":false}],\"where\":[{\"type\":\"tag\",\"key\":\"pod_cluster_0\",\"func\":\"\",\"op\":\"LIKE\",\"val\":[{\"label\":\"$cluster\",\"value\":\"cluster\",\"isVariable\":true}],\"as\":\"\",\"params\":[],\"uuid\":\"c7e13d8e-88e2-4ef2-b6e6-563f6f480a01\",\"subFuncs\":[],\"whereOnly\":false},{\"type\":\"tag\",\"key\":\"pod_cluster_1\",\"func\":\"\",\"op\":\"LIKE\",\"val\":[{\"label\":\"$cluster\",\"value\":\"cluster\",\"isVariable\":true}],\"as\":\"\",\"params\":[],\"uuid\":\"d5f26b22-54d3-732c-0673-472d3c9a9e77\",\"subFuncs\":[],\"whereOnly\":false},{\"type\":\"tag\",\"key\":\"pod_ns_0\",\"func\":\"\",\"op\":\"LIKE\",\"val\":[{\"label\":\"$namespace\",\"value\":\"namespace\",\"isVariable\":true}],\"as\":\"\",\"params\":[],\"uuid\":\"ea53f834-7a15-4e6d-8262-662f8e89d170\",\"subFuncs\":[],\"whereOnly\":false},{\"type\":\"tag\",\"key\":\"pod_ns_1\",\"func\":\"\",\"op\":\"LIKE\",\"val\":[{\"label\":\"$namespace\",\"value\":\"namespace\",\"isVariable\":true}],\"as\":\"\",\"params\":[],\"uuid\":\"c6eb170b-d0db-879a-ad9f-65673669682d\",\"subFuncs\":[],\"whereOnly\":false},{\"type\":\"tag\",\"key\":\"pod_node_0\",\"func\":\"\",\"op\":\"LIKE\",\"val\":[{\"label\":\"$node\",\"value\":\"node\",\"isVariable\":true}],\"as\":\"\",\"params\":[],\"uuid\":\"fa107b79-4a18-4bc6-8d74-b88f9d2c1000\",\"subFuncs\":[],\"whereOnly\":false},{\"type\":\"tag\",\"key\":\"pod_node_1\",\"func\":\"\",\"op\":\"LIKE\",\"val\":[{\"label\":\"$node\",\"value\":\"node\",\"isVariable\":true}],\"as\":\"\",\"params\":[],\"uuid\":\"33fa3302-c691-60df-22d1-8ec1d0758e75\",\"subFuncs\":[],\"whereOnly\":false}],\"having\":[{\"type\":\"metric\",\"key\":\"\",\"func\":\"\",\"op\":\"\",\"val\":\"\",\"as\":\"\",\"params\":[],\"uuid\":\"1f4673b2-d389-0cb5-6d2e-c286dc1ed557\"}],\"groupBy\":[{\"type\":\"tag\",\"key\":\"pod_node_0\",\"func\":\"\",\"op\":\"\",\"val\":\"\",\"as\":\"\",\"params\":[],\"uuid\":\"cdd358e4-e0bd-ae91-d8c7-06d8bfcd9243\",\"sideType\":\"from\",\"subFuncs\":[],\"whereOnly\":false,\"isResourceType\":true},{\"type\":\"tag\",\"key\":\"pod_node_1\",\"func\":\"\",\"op\":\"\",\"val\":\"\",\"as\":\"\",\"params\":[],\"uuid\":\"2f65b9cb-5ac6-0dc2-73d9-2fd7af05acbd\",\"sideType\":\"to\",\"subFuncs\":[],\"whereOnly\":false,\"isResourceType\":true},{\"type\":\"tag\",\"key\":\"observation_point\",\"func\":\"\",\"op\":\"\",\"val\":\"\",\"as\":\"\",\"params\":[],\"uuid\":\"aea3aba4-1925-d85b-088a-e117207d95f4\",\"subFuncs\":[],\"whereOnly\":false,\"isResourceType\":false}],\"orderBy\":[{\"type\":\"metric\",\"key\":\"\",\"func\":\"\",\"op\":\"\",\"val\":\"\",\"as\":\"\",\"params\":[],\"uuid\":\"b0d1325b-4cfa-f690-c821-e42caae24525\",\"sort\":\"asc\"}],\"interval\":\"\",\"limit\":\"200\",\"offset\":\"\",\"formatAs\":\"\",\"alias\":\"\",\"showMetrics\":-1,\"tracingId\":null}",
+          "refId": "A",
+          "returnMetrics": [
+            {
+              "displayName": "Traffic bps",
+              "name": "Traffic bps",
+              "type": 1,
+              "unit": "bps"
+            }
+          ]
+        }
+      ],
+      "title": "Resource Map - Node Unit",
+      "type": "deepflowio-topo-panel"
+    },
+    {
+      "datasource": "$datasource",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 0,
+        "y": 27
+      },
+      "id": 2,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "pluginVersion": "10.4.3",
+      "targets": [
+        {
+          "builderOptions": {
+            "fields": [],
+            "limit": 100,
+            "mode": "list"
+          },
+          "datasource": "$datasource",
+          "format": 1,
+          "queryType": "sql",
+          "rawSql": "SELECT count() AS requests\nFROM flow_log.l7_flow_log AS l\nLEFT JOIN flow_tag.pod_ns_map AS ns0 ON l.pod_ns_id_0 = ns0.id\nLEFT JOIN flow_tag.pod_ns_map AS ns1 ON l.pod_ns_id_1 = ns1.id\nWHERE $__timeFilter(l.time)\n  AND l.biz_protocol = 'HTTP'\n  AND ('__any' IN (${namespace:singlequote}) OR '__disabled' IN (${namespace:singlequote}) OR ns0.name IN (${namespace:singlequote}) OR ns1.name IN (${namespace:singlequote}))",
+          "refId": "A"
+        }
+      ],
+      "title": "HTTP Requests",
+      "type": "stat"
+    },
+    {
+      "datasource": "$datasource",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 6,
+        "y": 27
+      },
+      "id": 3,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "pluginVersion": "10.4.3",
+      "targets": [
+        {
+          "builderOptions": {
+            "fields": [],
+            "limit": 100,
+            "mode": "list"
+          },
+          "datasource": "$datasource",
+          "format": 1,
+          "queryType": "sql",
+          "rawSql": "SELECT count() AS l4_flows\nFROM flow_log.l4_flow_log AS l\nLEFT JOIN flow_tag.pod_ns_map AS ns0 ON l.pod_ns_id_0 = ns0.id\nLEFT JOIN flow_tag.pod_ns_map AS ns1 ON l.pod_ns_id_1 = ns1.id\nWHERE $__timeFilter(l.time)\n  AND ('__any' IN (${namespace:singlequote}) OR '__disabled' IN (${namespace:singlequote}) OR ns0.name IN (${namespace:singlequote}) OR ns1.name IN (${namespace:singlequote}))",
+          "refId": "A"
+        }
+      ],
+      "title": "L4 Flows",
+      "type": "stat"
+    },
+    {
+      "datasource": "$datasource",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "unit": "bytes"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 12,
+        "y": 27
+      },
+      "id": 4,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "pluginVersion": "10.4.3",
+      "targets": [
+        {
+          "builderOptions": {
+            "fields": [],
+            "limit": 100,
+            "mode": "list"
+          },
+          "datasource": "$datasource",
+          "format": 1,
+          "queryType": "sql",
+          "rawSql": "SELECT ifNull(sum(l.byte_tx + l.byte_rx), 0) AS l4_bytes\nFROM flow_log.l4_flow_log AS l\nLEFT JOIN flow_tag.pod_ns_map AS ns0 ON l.pod_ns_id_0 = ns0.id\nLEFT JOIN flow_tag.pod_ns_map AS ns1 ON l.pod_ns_id_1 = ns1.id\nWHERE $__timeFilter(l.time)\n  AND ('__any' IN (${namespace:singlequote}) OR '__disabled' IN (${namespace:singlequote}) OR ns0.name IN (${namespace:singlequote}) OR ns1.name IN (${namespace:singlequote}))",
+          "refId": "A"
+        }
+      ],
+      "title": "L4 Bytes",
+      "type": "stat"
+    },
+    {
+      "datasource": "$datasource",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 1
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 18,
+        "y": 27
+      },
+      "id": 5,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "pluginVersion": "10.4.3",
+      "targets": [
+        {
+          "builderOptions": {
+            "fields": [],
+            "limit": 100,
+            "mode": "list"
+          },
+          "datasource": "$datasource",
+          "format": 1,
+          "queryType": "sql",
+          "rawSql": "SELECT count() AS errors\nFROM flow_log.l7_flow_log AS l\nLEFT JOIN flow_tag.pod_ns_map AS ns0 ON l.pod_ns_id_0 = ns0.id\nLEFT JOIN flow_tag.pod_ns_map AS ns1 ON l.pod_ns_id_1 = ns1.id\nWHERE $__timeFilter(l.time)\n  AND ('__any' IN (${namespace:singlequote}) OR '__disabled' IN (${namespace:singlequote}) OR ns0.name IN (${namespace:singlequote}) OR ns1.name IN (${namespace:singlequote}))\n  AND (l.response_status != 0 OR ifNull(l.response_code, 0) >= 500)",
+          "refId": "A"
+        }
+      ],
+      "title": "L7 Errors",
+      "type": "stat"
+    },
+    {
+      "datasource": "$datasource",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 15,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 3,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "unit": "reqps"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 31
+      },
+      "id": 6,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "10.4.3",
+      "targets": [
+        {
+          "builderOptions": {
+            "fields": [],
+            "limit": 100,
+            "mode": "list"
+          },
+          "datasource": "$datasource",
+          "format": 2,
+          "queryType": "sql",
+          "rawSql": "SELECT\n  $__timeInterval(l.time) AS time,\n  concat(l.request_type, ' ', if(l.request_resource = '', '/', l.request_resource), ' ', toString(ifNull(l.response_code, 0))) AS series,\n  count() AS requests\nFROM flow_log.l7_flow_log AS l\nLEFT JOIN flow_tag.pod_ns_map AS ns0 ON l.pod_ns_id_0 = ns0.id\nLEFT JOIN flow_tag.pod_ns_map AS ns1 ON l.pod_ns_id_1 = ns1.id\nWHERE $__timeFilter(l.time)\n  AND l.biz_protocol = 'HTTP'\n  AND ('__any' IN (${namespace:singlequote}) OR '__disabled' IN (${namespace:singlequote}) OR ns0.name IN (${namespace:singlequote}) OR ns1.name IN (${namespace:singlequote}))\nGROUP BY time, series\nORDER BY time",
+          "refId": "A"
+        }
+      ],
+      "title": "HTTP Requests by Resource",
+      "type": "timeseries"
+    },
+    {
+      "datasource": "$datasource",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 15,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 3,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "unit": "bytes"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 31
+      },
+      "id": 7,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "10.4.3",
+      "targets": [
+        {
+          "builderOptions": {
+            "fields": [],
+            "limit": 100,
+            "mode": "list"
+          },
+          "datasource": "$datasource",
+          "format": 2,
+          "queryType": "sql",
+          "rawSql": "SELECT\n  $__timeInterval(l.time) AS time,\n  concat('TCP/', toString(l.server_port)) AS series,\n  sum(l.byte_tx + l.byte_rx) AS bytes\nFROM flow_log.l4_flow_log AS l\nLEFT JOIN flow_tag.pod_ns_map AS ns0 ON l.pod_ns_id_0 = ns0.id\nLEFT JOIN flow_tag.pod_ns_map AS ns1 ON l.pod_ns_id_1 = ns1.id\nWHERE $__timeFilter(l.time)\n  AND ('__any' IN (${namespace:singlequote}) OR '__disabled' IN (${namespace:singlequote}) OR ns0.name IN (${namespace:singlequote}) OR ns1.name IN (${namespace:singlequote}))\nGROUP BY time, series\nORDER BY time",
+          "refId": "A"
+        }
+      ],
+      "title": "L4 Traffic by Port",
+      "type": "timeseries"
+    },
+    {
+      "datasource": "$datasource",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "displayMode": "auto",
+            "inspect": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 39
+      },
+      "id": 8,
+      "options": {
+        "footer": {
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "showHeader": true
+      },
+      "pluginVersion": "10.4.3",
+      "targets": [
+        {
+          "builderOptions": {
+            "fields": [],
+            "limit": 100,
+            "mode": "list"
+          },
+          "datasource": "$datasource",
+          "format": 1,
+          "queryType": "sql",
+          "rawSql": "SELECT\n  if(p0.name = '', concat('pod#', toString(l.pod_id_0)), p0.name) AS client,\n  if(p1.name = '', concat('pod#', toString(l.pod_id_1)), p1.name) AS server,\n  concat('TCP/', toString(l.server_port)) AS protocol,\n  count() AS flows,\n  sum(l.byte_tx + l.byte_rx) AS bytes\nFROM flow_log.l4_flow_log AS l\nLEFT JOIN flow_tag.pod_map AS p0 ON l.pod_id_0 = p0.id\nLEFT JOIN flow_tag.pod_map AS p1 ON l.pod_id_1 = p1.id\nLEFT JOIN flow_tag.pod_ns_map AS ns0 ON l.pod_ns_id_0 = ns0.id\nLEFT JOIN flow_tag.pod_ns_map AS ns1 ON l.pod_ns_id_1 = ns1.id\nWHERE $__timeFilter(l.time)\n  AND ('__any' IN (${namespace:singlequote}) OR '__disabled' IN (${namespace:singlequote}) OR ns0.name IN (${namespace:singlequote}) OR ns1.name IN (${namespace:singlequote}))\nGROUP BY client, server, protocol\nORDER BY bytes DESC\nLIMIT 50",
+          "refId": "A"
+        }
+      ],
+      "title": "Top L4 Flow Summary",
+      "type": "table"
+    },
+    {
+      "datasource": "$datasource",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "displayMode": "auto",
+            "inspect": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 10,
+        "w": 24,
+        "x": 0,
+        "y": 47
+      },
+      "id": 9,
+      "options": {
+        "footer": {
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "showHeader": true
+      },
+      "pluginVersion": "10.4.3",
+      "targets": [
+        {
+          "builderOptions": {
+            "fields": [],
+            "limit": 100,
+            "mode": "list"
+          },
+          "datasource": "$datasource",
+          "format": 1,
+          "queryType": "sql",
+          "rawSql": "SELECT\n  l.time,\n  if(p0.name = '', concat('pod#', toString(l.pod_id_0)), p0.name) AS client_pod,\n  if(p1.name = '', concat('pod#', toString(l.pod_id_1)), p1.name) AS server_pod,\n  l.biz_protocol,\n  l.request_type,\n  l.request_domain,\n  l.request_resource,\n  l.response_code,\n  round(l.response_duration / 1000, 2) AS response_ms\nFROM flow_log.l7_flow_log AS l\nLEFT JOIN flow_tag.pod_map AS p0 ON l.pod_id_0 = p0.id\nLEFT JOIN flow_tag.pod_map AS p1 ON l.pod_id_1 = p1.id\nLEFT JOIN flow_tag.pod_ns_map AS ns0 ON l.pod_ns_id_0 = ns0.id\nLEFT JOIN flow_tag.pod_ns_map AS ns1 ON l.pod_ns_id_1 = ns1.id\nWHERE $__timeFilter(l.time)\n  AND ('__any' IN (${namespace:singlequote}) OR '__disabled' IN (${namespace:singlequote}) OR ns0.name IN (${namespace:singlequote}) OR ns1.name IN (${namespace:singlequote}))\nORDER BY l.time DESC\nLIMIT 100",
+          "refId": "A"
+        }
+      ],
+      "title": "Recent L7 Logs",
+      "type": "table"
+    }
+  ],
+  "refresh": "30s",
+  "schemaVersion": 39,
+  "style": "dark",
+  "tags": [
+    "deepflow",
+    "resource-map",
+    "kubernetes"
+  ],
+  "templating": {
+    "list": [
+      {
+        "current": {
+          "selected": true,
+          "text": "DeepFlow",
+          "value": "DeepFlow"
+        },
+        "hide": 0,
+        "includeAll": false,
+        "label": "DeepFlow Data Source",
+        "multi": false,
+        "name": "deepflow_datasource",
+        "options": [],
+        "query": "deepflowio-deepflow-datasource",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "type": "datasource"
+      },
+      {
+        "current": {
+          "selected": true,
+          "text": "DeepFlow ClickHouse",
+          "value": "DeepFlow ClickHouse"
+        },
+        "hide": 0,
+        "includeAll": false,
+        "label": "ClickHouse Data Source",
+        "multi": false,
+        "name": "datasource",
+        "options": [],
+        "query": "grafana-clickhouse-datasource",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "type": "datasource"
+      },
+      {
+        "_comment": "ClickHouse query variable. Values are Kubernetes resource names, not DeepFlow IDs.",
+        "allValue": "__any",
+        "current": {
+          "selected": true,
+          "text": [
+            "All"
+          ],
+          "value": [
+            "__any"
+          ]
+        },
+        "datasource": "$datasource",
+        "definition": "SELECT name AS __text, name AS __value FROM flow_tag.pod_cluster_map WHERE name != '' GROUP BY name ORDER BY name",
+        "hide": 0,
+        "includeAll": true,
+        "label": "cluster",
+        "multi": true,
+        "name": "cluster",
+        "options": [],
+        "query": "SELECT name AS __text, name AS __value FROM flow_tag.pod_cluster_map WHERE name != '' GROUP BY name ORDER BY name",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 1,
+        "type": "query"
+      },
+      {
+        "_comment": "ClickHouse query variable. Values are Kubernetes resource names, not DeepFlow IDs.",
+        "allValue": "__any",
+        "current": {
+          "selected": true,
+          "text": [
+            "All"
+          ],
+          "value": [
+            "__any"
+          ]
+        },
+        "datasource": "$datasource",
+        "definition": "SELECT ns.name AS __text, ns.name AS __value FROM flow_tag.pod_ns_map AS ns LEFT JOIN flow_tag.pod_cluster_map AS c ON ns.pod_cluster_id = c.id WHERE ns.name != '' AND ('__any' IN (${cluster:singlequote}) OR '__disabled' IN (${cluster:singlequote}) OR c.name IN (${cluster:singlequote})) GROUP BY ns.name ORDER BY ns.name",
+        "hide": 0,
+        "includeAll": true,
+        "label": "namespace",
+        "multi": true,
+        "name": "namespace",
+        "options": [],
+        "query": "SELECT ns.name AS __text, ns.name AS __value FROM flow_tag.pod_ns_map AS ns LEFT JOIN flow_tag.pod_cluster_map AS c ON ns.pod_cluster_id = c.id WHERE ns.name != '' AND ('__any' IN (${cluster:singlequote}) OR '__disabled' IN (${cluster:singlequote}) OR c.name IN (${cluster:singlequote})) GROUP BY ns.name ORDER BY ns.name",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 1,
+        "type": "query"
+      },
+      {
+        "_comment": "ClickHouse query variable. Values are Kubernetes resource names, not DeepFlow IDs.",
+        "allValue": "__any",
+        "current": {
+          "selected": true,
+          "text": [
+            "All"
+          ],
+          "value": [
+            "__any"
+          ]
+        },
+        "datasource": "$datasource",
+        "definition": "SELECT pg.name AS __text, pg.name AS __value FROM flow_tag.pod_group_map AS pg LEFT JOIN flow_tag.pod_cluster_map AS c ON pg.pod_cluster_id = c.id LEFT JOIN flow_tag.pod_ns_map AS ns ON pg.pod_ns_id = ns.id WHERE pg.name != '' AND ('__any' IN (${cluster:singlequote}) OR '__disabled' IN (${cluster:singlequote}) OR c.name IN (${cluster:singlequote})) AND ('__any' IN (${namespace:singlequote}) OR '__disabled' IN (${namespace:singlequote}) OR ns.name IN (${namespace:singlequote})) GROUP BY pg.name ORDER BY pg.name",
+        "hide": 0,
+        "includeAll": true,
+        "label": "workload",
+        "multi": true,
+        "name": "workload",
+        "options": [],
+        "query": "SELECT pg.name AS __text, pg.name AS __value FROM flow_tag.pod_group_map AS pg LEFT JOIN flow_tag.pod_cluster_map AS c ON pg.pod_cluster_id = c.id LEFT JOIN flow_tag.pod_ns_map AS ns ON pg.pod_ns_id = ns.id WHERE pg.name != '' AND ('__any' IN (${cluster:singlequote}) OR '__disabled' IN (${cluster:singlequote}) OR c.name IN (${cluster:singlequote})) AND ('__any' IN (${namespace:singlequote}) OR '__disabled' IN (${namespace:singlequote}) OR ns.name IN (${namespace:singlequote})) GROUP BY pg.name ORDER BY pg.name",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 1,
+        "type": "query"
+      },
+      {
+        "_comment": "ClickHouse query variable. Values are Kubernetes resource names, not DeepFlow IDs.",
+        "allValue": "__any",
+        "current": {
+          "selected": true,
+          "text": [
+            "All"
+          ],
+          "value": [
+            "__any"
+          ]
+        },
+        "datasource": "$datasource",
+        "definition": "SELECT p.name AS __text, p.name AS __value FROM flow_tag.pod_map AS p LEFT JOIN flow_tag.pod_cluster_map AS c ON p.pod_cluster_id = c.id LEFT JOIN flow_tag.pod_ns_map AS ns ON p.pod_ns_id = ns.id WHERE p.name != '' AND ('__any' IN (${cluster:singlequote}) OR '__disabled' IN (${cluster:singlequote}) OR c.name IN (${cluster:singlequote})) AND ('__any' IN (${namespace:singlequote}) OR '__disabled' IN (${namespace:singlequote}) OR ns.name IN (${namespace:singlequote})) GROUP BY p.name ORDER BY p.name",
+        "hide": 0,
+        "includeAll": true,
+        "label": "pod",
+        "multi": true,
+        "name": "pod",
+        "options": [],
+        "query": "SELECT p.name AS __text, p.name AS __value FROM flow_tag.pod_map AS p LEFT JOIN flow_tag.pod_cluster_map AS c ON p.pod_cluster_id = c.id LEFT JOIN flow_tag.pod_ns_map AS ns ON p.pod_ns_id = ns.id WHERE p.name != '' AND ('__any' IN (${cluster:singlequote}) OR '__disabled' IN (${cluster:singlequote}) OR c.name IN (${cluster:singlequote})) AND ('__any' IN (${namespace:singlequote}) OR '__disabled' IN (${namespace:singlequote}) OR ns.name IN (${namespace:singlequote})) GROUP BY p.name ORDER BY p.name",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 1,
+        "type": "query"
+      },
+      {
+        "_comment": "ClickHouse query variable. Values are Kubernetes resource names, not DeepFlow IDs.",
+        "allValue": "__any",
+        "current": {
+          "selected": true,
+          "text": [
+            "All"
+          ],
+          "value": [
+            "__any"
+          ]
+        },
+        "datasource": "$datasource",
+        "definition": "SELECT s.name AS __text, s.name AS __value FROM flow_tag.pod_service_map AS s LEFT JOIN flow_tag.pod_cluster_map AS c ON s.pod_cluster_id = c.id LEFT JOIN flow_tag.pod_ns_map AS ns ON s.pod_ns_id = ns.id WHERE s.name != '' AND NOT endsWith(s.name, ' (deleted)') AND ('__any' IN (${cluster:singlequote}) OR '__disabled' IN (${cluster:singlequote}) OR c.name IN (${cluster:singlequote})) AND ('__any' IN (${namespace:singlequote}) OR '__disabled' IN (${namespace:singlequote}) OR ns.name IN (${namespace:singlequote})) GROUP BY s.name ORDER BY s.name",
+        "hide": 0,
+        "includeAll": true,
+        "label": "service",
+        "multi": true,
+        "name": "service",
+        "options": [],
+        "query": "SELECT s.name AS __text, s.name AS __value FROM flow_tag.pod_service_map AS s LEFT JOIN flow_tag.pod_cluster_map AS c ON s.pod_cluster_id = c.id LEFT JOIN flow_tag.pod_ns_map AS ns ON s.pod_ns_id = ns.id WHERE s.name != '' AND NOT endsWith(s.name, ' (deleted)') AND ('__any' IN (${cluster:singlequote}) OR '__disabled' IN (${cluster:singlequote}) OR c.name IN (${cluster:singlequote})) AND ('__any' IN (${namespace:singlequote}) OR '__disabled' IN (${namespace:singlequote}) OR ns.name IN (${namespace:singlequote})) GROUP BY s.name ORDER BY s.name",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 1,
+        "type": "query"
+      },
+      {
+        "_comment": "ClickHouse query variable. Values are Kubernetes resource names, not DeepFlow IDs.",
+        "allValue": "__any",
+        "current": {
+          "selected": true,
+          "text": [
+            "All"
+          ],
+          "value": [
+            "__any"
+          ]
+        },
+        "datasource": "$datasource",
+        "definition": "SELECT n.name AS __text, n.name AS __value FROM flow_tag.pod_node_map AS n LEFT JOIN flow_tag.pod_cluster_map AS c ON n.pod_cluster_id = c.id LEFT JOIN flow_tag.pod_map AS p ON p.pod_node_id = n.id LEFT JOIN flow_tag.pod_ns_map AS ns ON p.pod_ns_id = ns.id WHERE n.name != '' AND ('__any' IN (${cluster:singlequote}) OR '__disabled' IN (${cluster:singlequote}) OR c.name IN (${cluster:singlequote})) AND ('__any' IN (${namespace:singlequote}) OR '__disabled' IN (${namespace:singlequote}) OR ns.name IN (${namespace:singlequote})) GROUP BY n.name ORDER BY n.name",
+        "hide": 0,
+        "includeAll": true,
+        "label": "node",
+        "multi": true,
+        "name": "node",
+        "options": [],
+        "query": "SELECT n.name AS __text, n.name AS __value FROM flow_tag.pod_node_map AS n LEFT JOIN flow_tag.pod_cluster_map AS c ON n.pod_cluster_id = c.id LEFT JOIN flow_tag.pod_map AS p ON p.pod_node_id = n.id LEFT JOIN flow_tag.pod_ns_map AS ns ON p.pod_ns_id = ns.id WHERE n.name != '' AND ('__any' IN (${cluster:singlequote}) OR '__disabled' IN (${cluster:singlequote}) OR c.name IN (${cluster:singlequote})) AND ('__any' IN (${namespace:singlequote}) OR '__disabled' IN (${namespace:singlequote}) OR ns.name IN (${namespace:singlequote})) GROUP BY n.name ORDER BY n.name",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 1,
+        "type": "query"
+      }
+    ]
+  },
+  "time": {
+    "from": "now-30m",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "",
+  "title": "DeepFlow Resource Maps by Unit",
+  "uid": "deepflow-resource-maps-by-unit",
+  "version": 1,
+  "weekStart": ""
+}
