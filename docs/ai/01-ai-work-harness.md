@@ -33,7 +33,7 @@ primary가 아닌 것:
 - `sidecarless-observability`
 - `sidecarless.network_events`
 
-이 항목들은 `legacy` 또는 과거 검토 항목으로만 취급합니다.
+이 항목들은 삭제된 과거 산출물입니다. 현재 구축 경로로 복원하지 않습니다.
 
 ## 3. 작업 시작 절차
 
@@ -50,7 +50,7 @@ AI는 작업 전 다음 순서로 확인합니다.
 
 ```powershell
 rg --files
-rg -n "Istio|Ambient|DeepFlow|legacy|deprecated|sidecarless-smoke|terraform apply" README.md docs infra
+rg -n "Istio|Ambient|DeepFlow|deleted|deprecated|sidecarless-smoke|terraform apply" README.md docs infra
 ```
 
 ## 4. 작업 유형별 원칙
@@ -59,7 +59,7 @@ rg -n "Istio|Ambient|DeepFlow|legacy|deprecated|sidecarless-smoke|terraform appl
 
 - 파일 수정 금지
 - 읽기 전용 명령만 실행
-- stale path, legacy path, source-of-truth 불일치를 우선 확인
+- stale path, 삭제된 과거 경로, source-of-truth 불일치를 우선 확인
 - 결과는 문제점, 근거 파일, 조치 제안 순서로 보고
 
 ### 문서 수정
@@ -79,7 +79,7 @@ rg -n "Istio|Ambient|DeepFlow|legacy|deprecated|sidecarless-smoke|terraform appl
 - DeepFlow는 `infra/observability/deepflow`
 - Kiali는 팀 가이드 문서 기준으로 설치하고, 별도 manifest를 만들 때만 `infra/`에 추가
 - Windows PowerShell 실행 래퍼를 새로 만들지 않음
-- legacy 경로를 기본 구축 흐름에 다시 넣지 않음
+- 삭제된 과거 manifest를 기본 구축 흐름에 다시 넣지 않음
 
 ### Terraform 수정
 
@@ -93,7 +93,7 @@ rg -n "Istio|Ambient|DeepFlow|legacy|deprecated|sidecarless-smoke|terraform appl
 
 - [ ] 사용자의 최신 요청과 맞는가?
 - [ ] source-of-truth의 구축 경로 기준인가?
-- [ ] legacy 파일을 건드리는 이유가 명확한가?
+- [ ] 삭제된 과거 파일을 복원하려는 이유가 명확한가?
 - [ ] 실제 클러스터 변경 명령이 포함되는가?
 - [ ] `apply`, `install`, `upgrade`가 필요한 경우 사용자가 요청했는가?
 - [ ] 검증 방법이 있는가?

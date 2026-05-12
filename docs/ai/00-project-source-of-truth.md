@@ -27,6 +27,7 @@
 - Kiali는 Istio용 콘솔이므로 DeepFlow 단독 경로에는 포함하지 않습니다.
 - Istio Ambient + Kiali 뒤의 DeepFlow 추가는 Kiali와 DeepFlow 관측 관점을 비교하기 위한 선택 확장입니다.
 - Ambient 적용 후 L4/L7 관측 범위는 smoke traffic으로 별도 검증합니다.
+- 현재 NKS에는 `csi-cinder` add-on이 추가되어 있다는 전제로, DeepFlow PVC는 `sgh-cinder-sc` StorageClass를 사용합니다.
 
 ## 2. 성공 기준
 
@@ -43,6 +44,8 @@
 ### Infrastructure
 
 - NHN Cloud NKS
+- NKS `csi-cinder` add-on
+- `sgh-cinder-sc` StorageClass
 - Calico-VXLAN 또는 Calico-eBPF 확인
 - Terraform NKS plan
 
@@ -59,6 +62,7 @@
 - DeepFlow
 - DeepFlow ClickHouse
 - DeepFlow Grafana
+- DeepFlow PVC on `sgh-cinder-sc`
 
 ### Application
 
@@ -77,7 +81,7 @@
 - `sidecarless-observability`
 - `sidecarless.network_events`
 
-위 항목은 legacy 또는 별도 비교 실험으로만 취급합니다.
+위 항목은 삭제된 과거 산출물입니다. 현재 구축 경로로 복원하지 않습니다.
 
 ## 5. Primary 파일
 
@@ -138,6 +142,7 @@ Phase 7: Terraform 전환
 다음 항목은 변경 가능성이 있으므로 작업 전 공식 기준을 확인합니다.
 
 - NHN Cloud NKS 지원 Kubernetes/Add-on version
+- NHN Cloud NKS `csi-cinder` StorageClass provisioner/options
 - NHN Cloud NKS Calico mode/options
 - Istio Ambient install command/profile
 - Kiali install command/profile

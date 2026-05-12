@@ -14,7 +14,7 @@
 
 영향:
 
-- 직접 ClickHouse/Grafana manifest는 legacy/fallback으로 격리합니다.
+- 직접 ClickHouse/Grafana manifest는 현재 구축 경로에서 제외합니다.
 - `sidecarless.network_events` 테이블은 현재 primary 성공 기준이 아닙니다.
 
 ## 2026-05-08: Mesh 경로를 Istio Ambient로 확정
@@ -49,12 +49,11 @@
 
 - 새 문서에서 Cilium/Hubble을 기본 실행 경로로 참조하지 않습니다.
 
-## 2026-05-08: Legacy 경로 격리
+## 2026-05-08: 과거 manifest 경로 격리
 
 결정:
 
-- 이전 direct ClickHouse/Grafana와 echo workload를 legacy 경로로 이동합니다.
-- legacy manifest는 보존하되 기본 구축 경로에서 제외합니다.
+- 이전 direct ClickHouse/Grafana와 echo workload를 기본 구축 경로에서 제외합니다.
 
 이유:
 
@@ -74,7 +73,7 @@
 이유:
 
 - Windows PowerShell 래퍼가 팀 구축 가이드와 중복됩니다.
-- primary/legacy 실행 경로 혼동을 만들 수 있습니다.
+- 과거 실행 경로와 현재 구축 경로 사이에 혼동을 만들 수 있습니다.
 
 영향:
 
@@ -99,6 +98,24 @@
 - 팀은 `docs/team/01-build-guide.md`에서 경로를 선택합니다.
 - DeepFlow-only 명령은 `docs/team/build-guide-deepflow-only.md`에 둡니다.
 - Istio Ambient + Kiali 및 선택 DeepFlow 명령은 `docs/team/build-guide-istio-ambient-kiali.md`에 둡니다.
+
+## 2026-05-11: Legacy manifest 삭제
+
+결정:
+
+- 이전 direct ClickHouse/Grafana manifest를 삭제합니다.
+- 이전 echo-server sample workload를 삭제합니다.
+
+이유:
+
+- DeepFlow chart가 ClickHouse/Grafana를 구성하므로 별도 manifest가 필요하지 않습니다.
+- smoke web-was-db가 현재 workload 검증 기준입니다.
+- 보존용 legacy 디렉터리가 남아 있으면 실행자가 잘못 사용할 수 있습니다.
+
+영향:
+
+- 삭제된 과거 경로는 `docs/ai/04-deprecated-paths.md`에서 재생성 금지 항목으로만 관리합니다.
+- 현재 구축 경로는 `infra/observability/deepflow`, `infra/apps/smoke`, `infra/mesh/istio-ambient`입니다.
 
 ## 2026-05-08: Terraform은 plan-only
 

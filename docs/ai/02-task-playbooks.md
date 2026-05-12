@@ -15,7 +15,7 @@ git status --short
 
 확인할 것:
 
-- 현재 구축 경로와 legacy path 혼동 여부
+- 현재 구축 경로와 삭제된 과거 경로 혼동 여부
 - README 링크 정합성
 - 새 변경이 source-of-truth와 충돌하는지
 
@@ -84,7 +84,7 @@ helm search repo deepflow/deepflow --versions
 
 금지:
 
-- `infra/legacy/workloads`를 기본 경로로 되돌리지 않음
+- echo-server sample을 기본 경로로 되돌리지 않음
 - `sidecarless-demo`를 primary namespace로 사용하지 않음
 
 검증:
@@ -112,7 +112,7 @@ kubectl kustomize .\infra\apps\smoke
 rg -n "Cilium|Hubble|sidecarless-demo|sidecarless-observability|network_events|legacy" README.md docs
 ```
 
-legacy 언급은 `deprecated`, `비범위`, `이전 구성` 맥락에서만 허용합니다.
+legacy 언급은 삭제된 과거 산출물, 비범위, 이전 구성 맥락에서만 허용합니다.
 
 ## 7. "Terraform 구성해"
 
@@ -138,7 +138,7 @@ C:\terraform\terraform.exe validate
 
 관점:
 
-- 현재 구축 경로와 legacy path 혼동
+- 현재 구축 경로와 삭제된 과거 경로 혼동
 - 실제 apply/install이 문서 기본 흐름에 들어갔는지
 - 검증 기준이 DeepFlow/Ambient 기준인지
 - Kiali가 필요한 경로와 DeepFlow-only 경로가 섞이지 않았는지

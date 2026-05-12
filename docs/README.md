@@ -14,7 +14,7 @@ AI가 사용자의 요청에 맞게 파일과 가이드를 수정할 때 따라�
 - `01-ai-work-harness.md`: AI 작업 절차
 - `02-task-playbooks.md`: 반복 작업별 처리 방식
 - `03-validation-gates.md`: 단계별 검증 기준
-- `04-deprecated-paths.md`: 사용 금지/legacy 경로
+- `04-deprecated-paths.md`: 삭제된 과거 경로와 재생성 금지 기준
 - `05-decision-log.md`: 의사결정 기록
 
 ## 2. 팀 배포용 구축 문서

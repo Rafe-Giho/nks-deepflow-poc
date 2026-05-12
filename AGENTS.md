@@ -11,7 +11,7 @@
 2. NHN Cloud NKS -> Istio Ambient -> Prometheus -> Kiali -> sidecarless-smoke -> optional DeepFlow
 ```
 
-이전 Cilium/Hubble, 직접 ClickHouse/Grafana, echo-server sample은 현재 primary가 아니다.
+이전 Cilium/Hubble, 직접 ClickHouse/Grafana, echo-server sample은 현재 구축 경로가 아니며 재생성하지 않는다.
 
 ## Source Of Truth
 
@@ -46,14 +46,9 @@ AI 작업 규칙을 팀 배포용 문서에 섞지 않는다.
 - `infra/terraform/modules/istio-ambient`
 - `infra/terraform/modules/deepflow`
 
-## Deprecated Paths
+## Deleted Historical Paths
 
-다음 경로는 primary 작업에서 사용하지 않는다.
-
-- `infra/legacy`
-- `infra/observability/legacy-clickhouse-grafana`
-
-legacy 경로는 보존용이다. 사용자가 명시적으로 legacy 검증을 요청하지 않는 한 실행/수정/문서화 기본값으로 삼지 않는다.
+이전 direct ClickHouse/Grafana manifest와 echo-server sample은 삭제되었다. 사용자가 명시적으로 복원 요청을 하지 않는 한 다시 만들지 않는다.
 
 ## Execution Safety
 
@@ -67,7 +62,7 @@ legacy 경로는 보존용이다. 사용자가 명시적으로 legacy 검증을 
 
 1. 관련 파일을 먼저 읽는다.
 2. `docs/ai/00-project-source-of-truth.md`와 충돌하는지 확인한다.
-3. legacy 경로가 아닌 primary 경로에 최소 변경한다.
+3. 현재 구축 경로에 최소 변경한다.
 4. 필요한 문서 링크를 함께 갱신한다.
 5. 가능한 최소 검증을 실행한다.
 6. 결과 보고에는 변경 사항, 검증 상태, 남은 리스크를 포함한다.

@@ -10,7 +10,6 @@ DeepFlow
   -> Grafana
 ```
 
-이 디렉터리 루트에는 primary manifest를 두지 않습니다.
+이 디렉터리 루트에는 manifest를 두지 않습니다.
 
-- `deepflow/`: 현재 primary 관측 경로
-- `legacy-clickhouse-grafana/`: 이전 직접 ClickHouse/Grafana fallback 경로
+- `deepflow/`: 현재 관측 경로

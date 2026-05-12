@@ -57,5 +57,4 @@ Terraform provider는 Terraform Registry 기준 최신 `nhn-cloud/nhncloud` `1.0
 - `node_count`는 resize 리소스와 충돌하지 않도록 `ignore_changes`로 관리합니다.
 - NKS 컨트롤 플레인은 NHN Cloud가 관리하므로 kube-apiserver/etcd 저수준 설정은 Terraform 관리 범위가 아닙니다.
 - 클러스터 내부 주 관측 스택은 `infra/observability/deepflow`와 `docs/team/build-guide-deepflow-only.md` 또는 `docs/team/build-guide-istio-ambient-kiali.md`의 DeepFlow 설치 절차를 사용합니다.
-- 직접 ClickHouse/Grafana manifest는 `infra/observability/legacy-clickhouse-grafana`에 격리된 legacy/fallback 경로입니다.
 - 실제 plan 실행 전 `terraform.tfvars`의 placeholder 값을 모두 실제 NHN Cloud 값으로 교체해야 합니다.

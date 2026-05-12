@@ -48,13 +48,10 @@ NHN Cloud NKS에서 **DeepFlow 기반 L4/L7 trace 가시성**과 **Istio Ambient
 |-- infra/
 |   |-- apps/
 |   |   `-- smoke/
-|   |-- legacy/
-|   |   `-- workloads/
 |   |-- mesh/
 |   |   `-- istio-ambient/
 |   |-- observability/
-|   |   |-- deepflow/
-|   |   `-- legacy-clickhouse-grafana/
+|   |   `-- deepflow/
 |   |-- terraform/
 |   |   |-- nhn-nks/
 |   |   `-- modules/
@@ -62,7 +59,7 @@ NHN Cloud NKS에서 **DeepFlow 기반 L4/L7 trace 가시성**과 **Istio Ambient
 |   |       `-- istio-ambient/
 ```
 
-`infra/legacy`, `infra/observability/legacy-clickhouse-grafana`는 보존용입니다. 현재 1차 경로는 DeepFlow Helm chart가 배포하는 ClickHouse/Grafana와 `infra/apps/smoke`입니다.
+현재 관측 경로는 DeepFlow Helm chart가 배포하는 ClickHouse/Grafana와 `infra/apps/smoke`입니다. 이전 direct ClickHouse/Grafana manifest와 echo-server sample은 저장소에서 제거했습니다.
 
 ## 구축 기준
 
